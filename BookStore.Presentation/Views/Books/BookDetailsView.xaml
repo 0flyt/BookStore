@@ -1,14 +1,40 @@
-﻿<Page x:Class="BookStore.Presentation.Views.Books.BookDetailsView"
+﻿<UserControl x:Class="BookStore.Presentation.Views.Books.BookDetailsView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:BookStore.Presentation.Views.Books"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="BookDetailsView">
+      d:DesignHeight="450" d:DesignWidth="800">
 
-    <Grid>
+    <Border Margin="10" Padding="10" Background="WhiteSmoke" CornerRadius="5">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="70" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Titel: " />
+                <TextBlock Text="Författare: " />
+                <TextBlock Text="ISBN: " />
+                <TextBlock Text="Språk: " />
+                <TextBlock Text="Format: " />
+                <TextBlock Text="Pris" />
+                <TextBlock Text="Lager: " />
+            </StackPanel>
+            
+            <StackPanel Grid.Column="1">
+                <TextBlock Text="{Binding SelectedBook.Title}" />
+                <TextBlock Text="{Binding SelectedBook.AuthorNames}" />
+                <TextBlock Text="{Binding SelectedBook.Isbn13}" />
+                <TextBlock Text="{Binding SelectedBook.Language}" />
+                <TextBlock Text="{Binding SelectedBook.Format.Name}" />
+                <TextBlock Text="{Binding SelectedBook.Price, StringFormat={}{0:C2}, ConverterCulture=sv-SE}" />
+                <TextBlock Text="{Binding SelectedBook.CurrentStoreStock}" />
+            </StackPanel>
         
-    </Grid>
-</Page>
+        </Grid>
+    </Border>
+</UserControl>

@@ -5,8 +5,41 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BookStore.Presentation.Views.Shell"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Height="60"
+             Background="White"
+             >
     <Grid>
-        <TextBlock Text="Header" Margin="10" />
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="BookStore"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Margin="20 0" />
+
+        <StackPanel 
+            Grid.Column="1" 
+            Orientation="Horizontal" 
+            VerticalAlignment="Center" 
+            Margin="0 0 20 0">
+            
+            <TextBlock 
+                Text="Användare: Admin" 
+                VerticalAlignment="Center" 
+                Margin="0 0 10 0"/>
+            
+            <Button Content="Logga ut" 
+                    Padding="5 2" 
+                    Background="#FF007ACC" 
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    />
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -7,19 +7,34 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <StackPanel Margin="10">
-        <TextBlock Text="Böcker" FontWeight="Bold" Margin="0 0 0 5"/>
+    <StackPanel Background="#F8F8F8" Margin="0" >
+
+        <!-- Böcker -->
+        <TextBlock Text="Böcker" FontWeight="Bold" Margin="10 10 0 5"/>
         <Button Content="Sök bok"
                 Command="{Binding ShowBooksCommand}"
-                Margin="0 0 0 5" />
-        <Button Content="Alla böcker" />
+                Style="{StaticResource NavButtonStyle}" />
+        <Button Content="Alla böcker"
+                Style="{StaticResource NavButtonStyle}" />
 
-        <TextBlock Text="Författare" FontWeight="Bold" Margin="10 10 0 5"/>
-        <Button Content="Sök författare" />
+        <!-- Författare -->
+        <TextBlock Text="Författare" FontWeight="Bold" Margin="10 15 0 5"/>
+        <Button Content="Sök författare" Style="{StaticResource NavButtonStyle}" />
 
-        <TextBlock Text="Lager" FontWeight="Bold" Margin="10 10 0 5"/>
-        <Button Content="Lagerstatus" />
-        <Button Content="Lågt i lager" />
+        <!-- Lager -->
+        <TextBlock Text="Lager" FontWeight="Bold" Margin="10 15 0 5"/>
+        <Button Content="Lagerstatus" Style="{StaticResource NavButtonStyle}" />
+        <Button Content="Lågt i lager" Style="{StaticResource NavButtonStyle}" />
+
+        <!-- Beställningar -->
+        <TextBlock Text="Beställningar" FontWeight="Bold" Margin="10 15 0 5"/>
+        <Button Content="Skapa beställning" Style="{StaticResource NavButtonStyle}" />
+        <Button Content="Lista beställningar" Style="{StaticResource NavButtonStyle}" />
+
+        <!-- Administration -->
+        <TextBlock Text="Administration" FontWeight="Bold" Margin="10 15 0 5"/>
+        <Button Content="Anställda" Style="{StaticResource NavButtonStyle}" />
+        <Button Content="Butiker" Style="{StaticResource NavButtonStyle}" />
     </StackPanel>
 
     <!--<Grid>

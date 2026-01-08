@@ -18,7 +18,7 @@ namespace BookStore.Presentation.Views.Books
     /// <summary>
     /// Interaction logic for BookDetailsView.xaml
     /// </summary>
-    public partial class BookDetailsView : Page
+    public partial class BookDetailsView : UserControl
     {
         public BookDetailsView()
         {

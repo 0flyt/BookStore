@@ -7,27 +7,63 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
 
-    <Grid>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
 
+    <Grid Background="WhiteSmoke" Margin="0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0">
+            <TextBox Width="300" Height="25"
+                     Padding="5"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Content="Sök"
+                    Margin="5 0"
+                    Padding="5 2"
+                    Command="{Binding SearchCommand}"
+                    Background="#007ACC"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"/>
+        </StackPanel>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <TextBlock 
+            Grid.Row="1" 
+            Text="Sök på boktitel, författare, eller ISBN och tryck på sök."
+            Margin="10"
+            Visibility="{Binding IsBeforeSearch, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-            <TextBox Grid.Column="0" Margin="10" Padding="5 1" Text="Sök på: Titel / ISBN / Författare" />
-            <Button Grid.Column="1" Content="Sök" Margin="10" Padding="5 1" />
+        <TextBlock 
+            Grid.Row="1" 
+            Text="Inga böcker hittades."
+            Margin="10"
+            Visibility="{Binding IsEmptyResult, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-        </Grid>
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Books}">
-
+        <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding Books}"
+                  SelectedItem="{Binding SelectedBook}"
+                  AutoGenerateColumns="False" 
+                  Margin="10"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  HeadersVisibility="Column"
+                  Visibility="{Binding HasResults, Converter={StaticResource BoolToVisibilityConverter}}"
+                  >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Titel" Binding="{Binding Title}" Width="*" />
+                <DataGridTextColumn Header="Författare" Binding="{Binding AuthorNames}" Width="*" />
+                <DataGridTextColumn Header="ISBN" Binding="{Binding Isbn13}" Width="100" />
+                <DataGridTextColumn Header="Språk" Binding="{Binding Language}" Width="75" />
+                <DataGridTextColumn Header="Format" Binding="{Binding Format.Name}" Width="75" />
+            </DataGrid.Columns>
         </DataGrid>
+
+        <local:BookDetailsView Grid.Row="2" Visibility="{Binding IsBookSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
     </Grid>
 </UserControl>
