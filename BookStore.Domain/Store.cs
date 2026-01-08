@@ -26,4 +26,6 @@ public partial class Store
     public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
 
     public virtual ICollection<StoreBook> StoreBooks { get; set; } = new List<StoreBook>();
+
+    public string DisplayStoreName => $"{StoreName} {Address}";
 }

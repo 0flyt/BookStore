@@ -1,5 +1,8 @@
-﻿using BookStore.Infrastructure.Data.Model;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,20 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace BookStore.Presentation
+namespace BookStore.Presentation.Views.Inventory
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for InventoryView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class InventoryView : Page
     {
-        public MainWindow()
+        public InventoryView()
         {
             InitializeComponent();
-
-            using var db = new BookStoreContext();
-
-            var books = db.Books.ToList();
         }
     }
 }
