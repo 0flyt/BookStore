@@ -7,9 +7,10 @@
         xmlns:UI="clr-namespace:BookStore.Presentation.ViewModels" 
         xmlns:shell="clr-namespace:BookStore.Presentation.Views.Shell"
         xmlns:books="clr-namespace:BookStore.Presentation.Views.Books"
+        xmlns:authors="clr-namespace:BookStore.Presentation.Views.Authors"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=UI:MainWindowViewModel, IsDesignTimeCreatable=True}"
-        Title="BookStore" Height="450" Width="800">
+        Title="BookStore" MinHeight="800" MinWidth="1200">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60" />

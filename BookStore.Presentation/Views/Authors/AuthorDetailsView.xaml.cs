@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace BookStore.Presentation.Views.Authors
 {
     /// <summary>
-    /// Interaction logic for AuthorsView.xaml
+    /// Interaction logic for AuthorDetailsView.xaml
     /// </summary>
-    public partial class AuthorsView : UserControl
+    public partial class AuthorDetailsView : UserControl
     {
-        public AuthorsView()
+        public AuthorDetailsView()
         {
             InitializeComponent();
         }

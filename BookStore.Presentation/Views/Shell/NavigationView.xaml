@@ -19,7 +19,9 @@
 
         <!-- Författare -->
         <TextBlock Text="Författare" FontWeight="Bold" Margin="10 15 0 5"/>
-        <Button Content="Sök författare" Style="{StaticResource NavButtonStyle}" />
+        <Button Content="Sök författare"
+                Command="{Binding ShowAuthorsCommand}"
+                Style="{StaticResource NavButtonStyle}" />
 
         <!-- Lager -->
         <TextBlock Text="Lager" FontWeight="Bold" Margin="10 15 0 5"/>

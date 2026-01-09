@@ -13,6 +13,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="70" />
                 <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
@@ -22,7 +23,6 @@
                 <TextBlock Text="Språk: " />
                 <TextBlock Text="Format: " />
                 <TextBlock Text="Pris" />
-                <TextBlock Text="Lager: " />
             </StackPanel>
             
             <StackPanel Grid.Column="1">
@@ -32,9 +32,41 @@
                 <TextBlock Text="{Binding SelectedBook.Language}" />
                 <TextBlock Text="{Binding SelectedBook.Format.Name}" />
                 <TextBlock Text="{Binding SelectedBook.Price, StringFormat={}{0:C2}, ConverterCulture=sv-SE}" />
-                <TextBlock Text="{Binding SelectedBook.CurrentStoreStock}" />
             </StackPanel>
-        
+
+            <GroupBox Grid.Column="2" Header="Lagerstatus" VerticalAlignment="Top">
+                <ItemsControl ItemsSource="{Binding SelectedBook.StoreBooks}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock 
+                                    Text="{Binding Store.City}"
+                                    FontWeight="SemiBold"
+                                    Grid.Column="0"/>
+
+                                <TextBlock 
+                                    Text="{Binding Store.Address}"
+                                    Foreground="Gray"
+                                    Margin="10,0,0,0"
+                                    Grid.Column="1"/>    
+
+                                <TextBlock 
+                                    Grid.Column="2"
+                                    Margin="10,0,0,0"
+                                    Text="{Binding QuantityInStock, StringFormat={}{0} st}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </GroupBox>
+
+
         </Grid>
     </Border>
 </UserControl>

@@ -65,6 +65,9 @@ namespace BookStore.Presentation.ViewModels.Books
             var query = db.Books
                 .Include(b => b.Authors)
                 .Include(b => b.Format)
+                .Include(b => b.Genre)
+                .Include(b => b.StoreBooks)
+                    .ThenInclude(sb => sb.Store)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(SearchText))
