@@ -1,6 +1,7 @@
 ﻿using BookStore.Domain;
 using BookStore.Infrastructure.Data.Model;
 using BookStore.Presentation.Commands;
+using BookStore.Presentation.State;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace BookStore.Presentation.ViewModels.Authors
 {
     internal class AuthorsViewModel : ViewModelBase
     {
+        public UserSession Session { get; }
         public bool IsBeforeSearch { get; private set; } = true;
         public bool HasResults => Authors != null && Authors.Count > 0 && !IsBeforeSearch;
         public bool IsEmptyResult => !HasResults && !IsBeforeSearch;
@@ -53,8 +55,9 @@ namespace BookStore.Presentation.ViewModels.Authors
 
 
         public DelegateCommand SearchCommand { get; }
-        public AuthorsViewModel()
+        public AuthorsViewModel(UserSession session)
         {
+            Session = session;
             SearchCommand = new DelegateCommand(_ => SearchAuthors());
         }
 

@@ -16,11 +16,12 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Text="BookStore"
-                   FontSize="20"
-                   FontWeight="Bold"
-                   VerticalAlignment="Center"
-                   Margin="20 0" />
+        <TextBlock 
+            Text="BookStore"
+            FontSize="20"
+            FontWeight="Bold"
+            VerticalAlignment="Center"
+            Margin="20 0" />
 
         <StackPanel 
             Grid.Column="1" 
@@ -29,17 +30,27 @@
             Margin="0 0 20 0">
             
             <TextBlock 
-                Text="Användare: Admin" 
-                VerticalAlignment="Center" 
-                Margin="0 0 10 0"/>
+                Text="{Binding Session.CurrentUser.FullName}"    
+                VerticalAlignment="Center"      
+                Margin="0 0 10 0" />
             
-            <Button Content="Logga ut" 
-                    Padding="5 2" 
-                    Background="#FF007ACC" 
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand"
-                    />
+            <TextBlock 
+                Text="{Binding Session.CurrentStore.CityAndAddress}" 
+                VerticalAlignment="Center"
+                Margin="0 0 10 0" />
+            
+            <Button 
+                Content="Logga ut"
+                Padding="5 2"
+                Background="#FF007ACC"
+                Foreground="White"
+                BorderThickness="0"
+                Cursor="Hand"
+                Command="{Binding LogoutCommand}"
+                Visibility="{Binding 
+                    DataContext.Session.IsLoggedIn,
+                    RelativeSource={RelativeSource AncestorType=Window},
+                    Converter={StaticResource BoolToVisibilityConverter}}" />
         </StackPanel>
     </Grid>
 </UserControl>

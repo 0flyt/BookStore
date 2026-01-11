@@ -9,59 +9,68 @@
 
     <StackPanel Background="#F8F8F8" Margin="0" >
 
-        <!-- Böcker -->
-        <TextBlock Text="Böcker" FontWeight="Bold" Margin="10 10 0 5"/>
-        <Button Content="Sök bok"
-                Command="{Binding ShowBooksCommand}"
-                Style="{StaticResource NavButtonStyle}" />
-        <Button Content="Alla böcker"
-                Style="{StaticResource NavButtonStyle}" />
+        <TextBlock
+            Text="Böcker" 
+            FontWeight="Bold" 
+            Margin="10 10 0 5" />
 
-        <!-- Författare -->
-        <TextBlock Text="Författare" FontWeight="Bold" Margin="10 15 0 5"/>
-        <Button Content="Sök författare"
-                Command="{Binding ShowAuthorsCommand}"
-                Style="{StaticResource NavButtonStyle}" />
+        <Button 
+            Content="Sök bok"
+            Command="{Binding ShowBooksCommand}"
+            Style="{StaticResource NavButtonStyle}" />
 
-        <!-- Lager -->
-        <TextBlock Text="Lager" FontWeight="Bold" Margin="10 15 0 5"/>
-        <Button Content="Lagerstatus" Style="{StaticResource NavButtonStyle}" />
-        <Button Content="Lågt i lager" Style="{StaticResource NavButtonStyle}" />
+        <Button 
+            Content="Alla böcker"
+            Style="{StaticResource NavButtonStyle}" />
 
-        <!-- Beställningar -->
-        <TextBlock Text="Beställningar" FontWeight="Bold" Margin="10 15 0 5"/>
-        <Button Content="Skapa beställning" Style="{StaticResource NavButtonStyle}" />
-        <Button Content="Lista beställningar" Style="{StaticResource NavButtonStyle}" />
+        <TextBlock 
+            Text="Författare" 
+            FontWeight="Bold" 
+            Margin="10 15 0 5" />
 
-        <!-- Administration -->
-        <TextBlock Text="Administration" FontWeight="Bold" Margin="10 15 0 5"/>
-        <Button Content="Anställda" Style="{StaticResource NavButtonStyle}" />
-        <Button Content="Butiker" Style="{StaticResource NavButtonStyle}" />
+        <Button 
+            Content="Sök författare"
+            Command="{Binding ShowAuthorsCommand}"
+            Style="{StaticResource NavButtonStyle}" />
+
+        <TextBlock 
+            Text="Lager" 
+            FontWeight="Bold" 
+            Margin="10 15 0 5" />
+
+        <Button 
+            Content="Lagerstatus" 
+            Style="{StaticResource NavButtonStyle}" />
+
+        <Button 
+            Content="Lågt i lager" 
+            Style="{StaticResource NavButtonStyle}" />
+
+        <TextBlock 
+            Text="Beställningar" 
+            FontWeight="Bold" 
+            Margin="10 15 0 5"/>
+
+        <Button 
+            Content="Skapa beställning" 
+            Style="{StaticResource NavButtonStyle}" />
+
+        <Button 
+            Content="Lista beställningar" 
+            Style="{StaticResource NavButtonStyle}" />
+
+        <TextBlock 
+            Text="Administration" 
+            FontWeight="Bold" 
+            Margin="10 15 0 5" />
+
+        <Button 
+            Content="Anställda" 
+            Style="{StaticResource NavButtonStyle}" />
+
+        <Button 
+            Content="Butiker" 
+            Style="{StaticResource NavButtonStyle}" />
+
     </StackPanel>
-
-    <!--<Grid>
-        <TreeView>
-            <TreeViewItem Header="Böcker">
-                <TreeViewItem Header="Sök bok" />
-                <TreeViewItem Header="Alla böcker" />
-            </TreeViewItem>
-
-            <TreeViewItem Header="Författare" />
-
-            <TreeViewItem Header="Lager">
-                <TreeViewItem Header="Lagerstatus" />
-                <TreeViewItem Header="Lågt i lager" />
-            </TreeViewItem>
-
-            <TreeViewItem Header="Beställningar">
-                <TreeViewItem Header="Skapa beställning" />
-                <TreeViewItem Header="Lista beställningar" />
-            </TreeViewItem>
-
-            <TreeViewItem Header="Administration">
-                <TreeViewItem Header="Anställda" />
-                <TreeViewItem Header="Butiker" />
-            </TreeViewItem>
-        </TreeView>    
-    </Grid>-->
 </UserControl>

@@ -48,7 +48,7 @@
                                 <TextBlock 
                                     Text="{Binding Store.City}"
                                     FontWeight="SemiBold"
-                                    Grid.Column="0"/>
+                                    Grid.Column="0" />
 
                                 <TextBlock 
                                     Text="{Binding Store.Address}"

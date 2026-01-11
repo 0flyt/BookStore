@@ -36,7 +36,7 @@
                 Background="#007ACC"
                 Foreground="White"
                 BorderThickness="0"
-                Cursor="Hand"/>
+                Cursor="Hand" />
         </StackPanel>
 
         <TextBlock 
@@ -73,14 +73,16 @@
             IsReadOnly="True"
             Visibility="{Binding HasResults, Converter={StaticResource BoolToVisibilityConverter}}"
             >
+            
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Namn" Binding="{Binding FullName}" Width="200" />
                 <DataGridTextColumn Header="Född" Binding="{Binding Birth, StringFormat={}{0:yyyy}}" Width="50" />
                 <DataGridTextColumn Header="Böcker" Binding="{Binding BookCountDisplay}" Width="50" />
-                
             </DataGrid.Columns>
         </DataGrid>
 
-        <local:AuthorDetailsView Grid.Row="3" Visibility="{Binding IsAuthorSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
+        <local:AuthorDetailsView 
+            Grid.Row="3" 
+            Visibility="{Binding IsAuthorSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
     </Grid>
 </UserControl>

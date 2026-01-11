@@ -1,0 +1,39 @@
+﻿<UserControl 
+    x:Class="BookStore.Presentation.Views.Login.LoginView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:BookStore.Presentation.Views.Login"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800"
+    >
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ComboBox 
+            Grid.Row="0" 
+            ItemsSource="{Binding Users}" 
+            SelectedItem="{Binding SelectedUser}" 
+            DisplayMemberPath="LoginUserName" 
+            Margin="0 0 0 10" />
+
+        <ComboBox 
+            Grid.Row="1" 
+            ItemsSource="{Binding Stores}" 
+            SelectedItem="{Binding SelectedStore}" 
+            DisplayMemberPath="DisplayStoreName"
+            Margin="0 0 0 10" />
+
+        <Button 
+            Grid.Row="2" 
+            Content="Login" 
+            Command="{Binding LoginCommand}" 
+            Width="100"
+            HorizontalAlignment="Center" />
+    </Grid>
+</UserControl>

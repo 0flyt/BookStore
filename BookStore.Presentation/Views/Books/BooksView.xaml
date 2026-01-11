@@ -30,7 +30,7 @@
                     Background="#007ACC"
                     Foreground="White"
                     BorderThickness="0"
-                    Cursor="Hand"/>
+                    Cursor="Hand" />
         </StackPanel>
 
         <TextBlock 
@@ -54,18 +54,19 @@
             Foreground="Gray"
             Visibility="{Binding HasResults, Converter={StaticResource BoolToVisibilityConverter}}" />
         
-        <DataGrid Grid.Row="2" 
-                  HorizontalAlignment="Left"
-                  ItemsSource="{Binding Books}"
-                  SelectedItem="{Binding SelectedBook}"
-                  AutoGenerateColumns="False" 
-                  Margin="10"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  HeadersVisibility="Column"
-                  IsReadOnly="true"
-                  Visibility="{Binding HasResults, Converter={StaticResource BoolToVisibilityConverter}}"
-                  >
+        <DataGrid 
+            Grid.Row="2" 
+            HorizontalAlignment="Left"
+            ItemsSource="{Binding Books}"
+            SelectedItem="{Binding SelectedBook}"
+            AutoGenerateColumns="False" 
+            Margin="10"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            HeadersVisibility="Column"
+            IsReadOnly="true"
+            Visibility="{Binding HasResults, Converter={StaticResource BoolToVisibilityConverter}}"
+            >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Titel" Binding="{Binding Title}" Width="200" />
                 <DataGridTextColumn Header="Författare" Binding="{Binding AuthorNames}" Width="200" />
@@ -76,6 +77,8 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <local:BookDetailsView Grid.Row="3" Visibility="{Binding IsBookSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
+        <local:BookDetailsView 
+            Grid.Row="3" 
+            Visibility="{Binding IsBookSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
     </Grid>
 </UserControl>

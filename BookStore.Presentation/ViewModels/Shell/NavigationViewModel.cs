@@ -21,15 +21,9 @@ namespace BookStore.Presentation.ViewModels.Shell
         {
             _main = main;
 
-            ShowBooksCommand = new DelegateCommand(_ =>
-            {
-                _main.CurrentView = new BooksViewModel();
-            });
+            ShowBooksCommand = new DelegateCommand(_ => _main.ShowBooksView());
 
-            ShowAuthorsCommand = new DelegateCommand(_ =>
-            {
-                _main.CurrentView = new AuthorsViewModel();
-            });
+            ShowAuthorsCommand = new DelegateCommand(_ => _main.ShowAuthorsView());
         }
     }
 }
