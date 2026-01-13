@@ -37,6 +37,11 @@
                 Foreground="White"
                 BorderThickness="0"
                 Cursor="Hand" />
+
+            <Button 
+                Content="Lägg till ny författare"
+                Command="{Binding AddAuthorCommand}"
+                Margin="10,0,0,0" />
         </StackPanel>
 
         <TextBlock 

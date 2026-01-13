@@ -42,7 +42,10 @@
 
 
         <TextBlock Text="ISBN"/>
-        <TextBox Text="{Binding Isbn}" />
+        <TextBox 
+            Text="{Binding Isbn, UpdateSourceTrigger=PropertyChanged}"
+            MaxLength="13"
+            PreviewTextInput="OnlyDigits" />
 
         <TextBlock Text="Pris"/>
         <TextBox Text="{Binding Price}" />
@@ -51,7 +54,11 @@
         <TextBox Text="{Binding Language}" />
 
         <TextBlock Text="Utgivningsår"/>
-        <TextBox Text="{Binding ReleaseYear}" />
+        <DatePicker 
+            SelectedDate="{Binding Released, Mode=TwoWay}" 
+            Grid.Row="2" 
+            Grid.Column="1" 
+            Margin="0,0,0,5" />
 
         <TextBlock Text="Genre"/>
         <ComboBox 

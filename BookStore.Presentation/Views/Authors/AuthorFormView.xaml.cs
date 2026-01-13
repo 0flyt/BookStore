@@ -10,22 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace BookStore.Presentation.Views.Books
+namespace BookStore.Presentation.Views.Authors
 {
     /// <summary>
-    /// Interaction logic for BookFormView.xaml
+    /// Interaction logic for AuthorFormView.xaml
     /// </summary>
-    public partial class BookFormView : UserControl
+    public partial class AuthorFormView : UserControl
     {
-        public BookFormView()
+        public AuthorFormView()
         {
             InitializeComponent();
-        }
-        private void OnlyDigits(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = !e.Text.All(char.IsDigit);
         }
     }
 }

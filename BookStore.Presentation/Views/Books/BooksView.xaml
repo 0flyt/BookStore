@@ -67,7 +67,9 @@
             Grid.Row="2" 
             HorizontalAlignment="Left"
             ItemsSource="{Binding Books}"
-            SelectedItem="{Binding SelectedBook}"
+            SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
+            SelectionMode="Single"
+            SelectionUnit="FullRow"
             AutoGenerateColumns="False" 
             Margin="10"
             CanUserAddRows="False"
@@ -87,7 +89,6 @@
         </DataGrid>
 
         <local:BookDetailsView 
-            IsEnabled="{Binding IsBusy}"
             Grid.Row="3" 
             Visibility="{Binding IsBookSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
         

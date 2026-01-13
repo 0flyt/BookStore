@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace BookStore.Presentation.ViewModels.Books
 {
@@ -61,17 +62,16 @@ namespace BookStore.Presentation.ViewModels.Books
             }
         }
 
-        private int? _releaseYear;
-        public int? ReleaseYear
+        private DateTime? _released;
+        public DateTime? Released
         {
-            get => _releaseYear;
+            get => _released;
             set
             {
-                _releaseYear = value;
+                _released = value;
                 RaisedPropertyChanged();
             }
         }
-
 
         public ObservableCollection<Format> Formats { get; }
 
@@ -141,7 +141,7 @@ namespace BookStore.Presentation.ViewModels.Books
                 Title = selectedBook.Title;
                 Price = selectedBook.Price;
                 Language = selectedBook.Language;
-                ReleaseYear = selectedBook.ReleaseDate.Year;
+                Released = selectedBook.ReleaseDate.ToDateTime(TimeOnly.MinValue);
                 Isbn = selectedBook.Isbn13;
                 SelectedFormat = Formats.FirstOrDefault(f => f.FormatId == selectedBook.FormatId);
                 SelectedGenre = Genres.FirstOrDefault(g => g.GenreId == selectedBook.GenreId);
@@ -149,12 +149,7 @@ namespace BookStore.Presentation.ViewModels.Books
             }
             else
             {
-                //Title = string.Empty;
-                //Price = 0;
-                //Language = string.Empty;
-                //Isbn = string.Empty;
-                //SelectedFormat = string.Empty;
-                ReleaseYear = null;
+                Released = null;
                 SelectedAuthors = new ObservableCollection<Author>();
             }
 
@@ -189,6 +184,40 @@ namespace BookStore.Presentation.ViewModels.Books
 
         private void Save()
         {
+            if (string.IsNullOrWhiteSpace(Title))
+            {
+                MessageBox.Show("Titel måste anges.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Isbn))
+            {
+                MessageBox.Show("ISBN måste anges.");
+                return;
+            }
+
+            if (Isbn.Length != 13 || !Isbn.All(char.IsDigit))
+            {
+                MessageBox.Show(
+                    "ISBN måste bestå av exakt 13 siffror.",
+                    "Fel",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
+                return;
+            }
+
+            if (SelectedFormat == null || SelectedGenre == null)
+            {
+                MessageBox.Show("Format och genre måste väljas.");
+                return;
+            }
+
+            if (SelectedAuthors.Count == 0)
+            {
+                MessageBox.Show("Minst en författare måste anges. Om författare inte finns i listan måste denna läggas in innan bok kan skapas.");
+                return;
+            }
             using var db = new BookStoreContext();
 
             Book book;
@@ -201,6 +230,19 @@ namespace BookStore.Presentation.ViewModels.Books
             }
             else
             {
+                bool isbnExists = db.Books.Any(b => b.Isbn13 == Isbn);
+
+                if (isbnExists)
+                {
+                    MessageBox.Show(
+                        "En bok med detta ISBN finns redan.",
+                        "Fel",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
+                    return;
+                }
+
                 book = new Book { Isbn13 = Isbn };
                 db.Books.Add(book);
             }
@@ -209,7 +251,11 @@ namespace BookStore.Presentation.ViewModels.Books
             book.Isbn13 = Isbn;
             book.Price = Price ?? 0;
             book.Language = Language;
-            book.ReleaseDate = ReleaseYear.HasValue ? new DateOnly(ReleaseYear.Value, 1, 1) : new DateOnly();
+
+            if (Released.HasValue)
+            {
+                book.ReleaseDate = DateOnly.FromDateTime(Released.Value);
+            }
 
             book.FormatId = SelectedFormat!.FormatId;
             book.GenreId = SelectedGenre!.GenreId;
@@ -225,9 +271,30 @@ namespace BookStore.Presentation.ViewModels.Books
                 }
             }
 
-            db.SaveChanges();
 
-            CloseAction?.Invoke(true);
+            try
+            {
+                db.SaveChanges();
+                CloseAction?.Invoke(true);
+            }
+            catch (DbUpdateException ex)
+            {
+                MessageBox.Show(
+                    "Kunde inte spara boken.\nKontrollera att ISBN är unikt och att alla fält är korrekt ifyllda.",
+                    "Databasfel",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Ett oväntat fel inträffade.",
+                    "Fel",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
         }
 
 
