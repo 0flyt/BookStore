@@ -58,7 +58,7 @@ namespace BookStore.Presentation.ViewModels.Login
 			LoginCommand = new DelegateCommand(_ => Login(), _ => CanLogin());
         }
 
-        private bool CanLogin() => SelectedUser != null || SelectedStore != null;
+        private bool CanLogin() => SelectedUser != null && SelectedStore != null;
         private void Login()
         {
 			if (SelectedUser == null || SelectedStore == null) return;

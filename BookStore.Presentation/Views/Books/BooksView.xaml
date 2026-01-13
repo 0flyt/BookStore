@@ -31,6 +31,14 @@
                     Foreground="White"
                     BorderThickness="0"
                     Cursor="Hand" />
+            <CheckBox 
+                Content="Endast böcker i butik"
+                IsChecked="{Binding ShowOnlyCurrentStore}" 
+                VerticalAlignment="Center" Margin="10,0" />
+
+            
+            <Button Content="Lägg till en ny bok" Padding="5 0" Command="{Binding AddBookCommand}" />
+
         </StackPanel>
 
         <TextBlock 
