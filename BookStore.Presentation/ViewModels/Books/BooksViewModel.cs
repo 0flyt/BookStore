@@ -181,16 +181,38 @@ namespace BookStore.Presentation.ViewModels.Books
         {
             if (SelectedBook == null) return;
 
+            var result = MessageBox.Show(
+                $"Är du säker på att du vill ta bort '{SelectedBook.Title}' från databasen?",
+                "Bekräfta borttagning",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning
+            );
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
             using var db = new BookStoreContext();
-            var book = db.Books.Find(SelectedBook.Isbn13);
+
+            var book = db.Books
+                .Include(b => b.Authors)
+                .Include(b => b.StoreBooks)
+                .FirstOrDefault(b => b.Isbn13 == SelectedBook.Isbn13);
+
             if (book != null)
             {
+                book.Authors.Clear();
+                book.StoreBooks.Clear();
+
+                db.SaveChanges();
+
                 db.Books.Remove(book);
+
                 db.SaveChanges();
             }
 
             LoadBooks();
         }
+
 
     }
 }
