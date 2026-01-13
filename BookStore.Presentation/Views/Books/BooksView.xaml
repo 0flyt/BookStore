@@ -17,6 +17,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="10" />
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0">
@@ -86,7 +87,10 @@
         </DataGrid>
 
         <local:BookDetailsView 
+            IsEnabled="{Binding IsBusy}"
             Grid.Row="3" 
             Visibility="{Binding IsBookSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
+        
+        <ProgressBar Grid.Row="4" Height="10" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
     </Grid>
 </UserControl>

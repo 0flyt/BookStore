@@ -18,6 +18,17 @@ namespace BookStore.Presentation.ViewModels.Books
     {
         public UserSession Session { get; }
         public bool IsBeforeSearch { get; private set; } = true;
+
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
+                RaisedPropertyChanged();
+            }
+        }
         public bool HasResults => Books != null && Books.Count > 0 && !IsBeforeSearch;
         public bool IsEmptyResult => !HasResults && !IsBeforeSearch;
 
@@ -29,7 +40,7 @@ namespace BookStore.Presentation.ViewModels.Books
             {
                 _showOnlyCurrentStore = value;
                 RaisedPropertyChanged();
-                SearchBooks();
+                _ = SearchBooks();
             }
         }
 
@@ -78,7 +89,7 @@ namespace BookStore.Presentation.ViewModels.Books
         public BooksViewModel(UserSession session)
         {
             Session = session;
-			SearchCommand = new DelegateCommand(_ => SearchBooks());
+			SearchCommand = new DelegateCommand(async _ => await SearchBooks());
             AddBookCommand = new DelegateCommand(_ => AddBook());
             EditBookCommand = new DelegateCommand(_ => EditBook(), _ => SelectedBook != null);
             DeleteBookCommand = new DelegateCommand(_ => DeleteBook(), _ => SelectedBook != null);
@@ -101,8 +112,10 @@ namespace BookStore.Presentation.ViewModels.Books
                 );
         }
 
-        private void SearchBooks()
+        private async Task SearchBooks()
 		{
+            IsBusy = true;
+
             using var db = new BookStoreContext();
 
             var query = db.Books
@@ -126,13 +139,6 @@ namespace BookStore.Presentation.ViewModels.Books
                 );
             }
 
-            //if (Session.CurrentStore != null)
-            //{
-            //    query = query.Where(b =>
-            //        b.StoreBooks.Any(sb => sb.StoreId == Session.CurrentStore.StoreId)
-            //    );
-            //}
-
             if (ShowOnlyCurrentStore && Session.CurrentStore != null)
             {
                 query = query.Where(b =>
@@ -140,12 +146,16 @@ namespace BookStore.Presentation.ViewModels.Books
                 );
             }
 
+            var results = await query.ToListAsync();
+
             Books = new ObservableCollection<Book>(query.ToList());
             RaisedPropertyChanged(nameof(Books));
             IsBeforeSearch = false;
             RaisedPropertyChanged(nameof(IsBeforeSearch));
             RaisedPropertyChanged(nameof(HasResults));
             RaisedPropertyChanged(nameof(IsEmptyResult));
+
+            IsBusy = false;
         }
 
         private void AddBook()

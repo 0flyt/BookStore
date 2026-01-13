@@ -22,6 +22,7 @@
                 <TextBlock Text="Författare: " />
                 <TextBlock Text="ISBN: " />
                 <TextBlock Text="Språk: " />
+                <TextBlock Text="Utgiven: "/>
                 <TextBlock Text="Format: " />
                 <TextBlock Text="Pris" />
             </StackPanel>
@@ -31,6 +32,7 @@
                 <TextBlock Text="{Binding SelectedBook.AuthorNames}" />
                 <TextBlock Text="{Binding SelectedBook.Isbn13}" />
                 <TextBlock Text="{Binding SelectedBook.Language}" />
+                <TextBlock Text="{Binding SelectedBook.ReleaseDate, StringFormat={}{0:yyyy-MM-dd}}" />
                 <TextBlock Text="{Binding SelectedBook.Format.Name}" />
                 <TextBlock Text="{Binding SelectedBook.Price, StringFormat={}{0:C2}, ConverterCulture=sv-SE}" />
             </StackPanel>
