@@ -28,6 +28,39 @@ namespace BookStore.Presentation.ViewModels.Inventory
             }
         }
 
+        private int _totalTitles;
+        public int TotalTitles
+        {
+            get => _totalTitles;
+            private set
+            {
+                _totalTitles = value;
+                RaisedPropertyChanged();
+            }
+        }
+
+        private int _totalQuantity;
+        public int TotalQuantity
+        {
+            get => _totalQuantity;
+            private set
+            {
+                _totalQuantity = value;
+                RaisedPropertyChanged();
+            }
+        }
+
+        private decimal _totalValue;
+        public decimal TotalValue
+        {
+            get => _totalValue;
+            private set
+            {
+                _totalValue = value;
+                RaisedPropertyChanged();
+            }
+        }
+
         public ObservableCollection<DisplayInventory> Inventory { get; } = new();
 
         public InventoryViewModel(UserSession session)
@@ -43,9 +76,13 @@ namespace BookStore.Presentation.ViewModels.Inventory
 
         private void LoadInventory()
         {
+            Inventory.Clear();
+
             if (SelectedStore == null)
             {
-                Inventory.Clear();
+                TotalTitles = 0;
+                TotalQuantity = 0;
+                TotalValue = 0;
                 return;
             }
 
@@ -60,17 +97,21 @@ namespace BookStore.Presentation.ViewModels.Inventory
                     Language = sb.Isbn13Navigation.Language,
                     Genre = sb.Isbn13Navigation.Genre.Name,
                     Format = sb.Isbn13Navigation.Format.Name,
-                    Authors = string.Join(", ", sb.Isbn13Navigation.Authors
-                        .Select(a => a.FirstName + " " + a.LastName)
-                    ),
-                    Quantity = sb.QuantityInStock
+                    Authors = string
+                        .Join(", ", sb.Isbn13Navigation.Authors
+                        .Select(a => a.FirstName + " " + a.LastName)),
+                    Quantity = sb.QuantityInStock,
+                    Price = sb.Isbn13Navigation.Price
                 }).ToList();
 
-                Inventory.Clear();
                 foreach (var item in items)
                 {
                     Inventory.Add(item);
                 }
+
+                TotalTitles = items.Count;
+                TotalQuantity = items.Sum(i => i.Quantity);
+                TotalValue = items.Sum(i => i.PriceAndQuantitiy);
         }
         public class DisplayInventory
         {
@@ -81,6 +122,8 @@ namespace BookStore.Presentation.ViewModels.Inventory
             public string Format { get; set; } = "";
             public string Authors { get; set; } = "";
             public int Quantity { get; set; }
+            public decimal Price { get; set; }
+            public decimal PriceAndQuantitiy => Price * Quantity;
         }
     }
 }

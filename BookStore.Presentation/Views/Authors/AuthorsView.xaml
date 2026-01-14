@@ -26,7 +26,7 @@
             FontSize="24"
             FontWeight="SemiBold"
             VerticalAlignment="Center"
-            Margin="15,10,15,5" />
+            Margin="10" />
 
         <StackPanel 
             Orientation="Horizontal" 
@@ -51,7 +51,7 @@
             <Button 
                 Content="Lägg till ny författare"
                 Command="{Binding AddAuthorCommand}"
-                Margin="10,0,0,0" />
+                Margin="10 0 0 0" />
         </StackPanel>
 
         <TextBlock 

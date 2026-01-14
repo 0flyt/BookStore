@@ -27,7 +27,7 @@
             FontSize="24"
             FontWeight="SemiBold"
             VerticalAlignment="Center"
-            Margin="15,10,15,5" />
+            Margin="10" />
 
         <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="1">
             <TextBox 
@@ -48,7 +48,7 @@
             <CheckBox 
                 Content="Endast böcker i butik"
                 IsChecked="{Binding ShowOnlyCurrentStore}" 
-                VerticalAlignment="Center" Margin="10,0" />
+                VerticalAlignment="Center" Margin="10 0" />
 
             
             <Button 
@@ -74,7 +74,7 @@
         <TextBlock 
             Grid.Row="2"
             Text="Klicka på en bok för att se detaljer om den." 
-            Margin="10,0,10,5" 
+            Margin="10 0" 
             FontStyle="Italic" 
             Foreground="Gray"
             Visibility="{Binding HasResults, Converter={StaticResource BoolToVisibilityConverter}}" />
