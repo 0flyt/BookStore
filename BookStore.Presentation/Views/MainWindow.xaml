@@ -8,6 +8,7 @@
         xmlns:shell="clr-namespace:BookStore.Presentation.Views.Shell"
         xmlns:books="clr-namespace:BookStore.Presentation.Views.Books"
         xmlns:authors="clr-namespace:BookStore.Presentation.Views.Authors"
+        xmlns:inventory="clr-namespace:BookStore.Presentation.Views.Inventory"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=UI:MainWindowViewModel, IsDesignTimeCreatable=True}"
         Title="BookStore" MinHeight="800" MinWidth="1200">

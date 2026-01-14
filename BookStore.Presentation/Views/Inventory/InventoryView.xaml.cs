@@ -18,7 +18,7 @@ namespace BookStore.Presentation.Views.Inventory
     /// <summary>
     /// Interaction logic for InventoryView.xaml
     /// </summary>
-    public partial class InventoryView : Page
+    public partial class InventoryView : UserControl
     {
         public InventoryView()
         {

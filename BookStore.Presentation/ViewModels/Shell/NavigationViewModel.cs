@@ -2,6 +2,7 @@
 using BookStore.Presentation.Commands;
 using BookStore.Presentation.ViewModels.Authors;
 using BookStore.Presentation.ViewModels.Books;
+using BookStore.Presentation.ViewModels.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,7 @@ namespace BookStore.Presentation.ViewModels.Shell
         private readonly MainWindowViewModel _main;
         public ICommand ShowBooksCommand { get; }
         public ICommand ShowAuthorsCommand { get; }
+        public ICommand ShowInventoryCommand { get; }
         public NavigationViewModel(MainWindowViewModel main)
         {
             _main = main;
@@ -24,6 +26,7 @@ namespace BookStore.Presentation.ViewModels.Shell
             ShowBooksCommand = new DelegateCommand(_ => _main.ShowBooksView());
 
             ShowAuthorsCommand = new DelegateCommand(_ => _main.ShowAuthorsView());
+            ShowInventoryCommand = new DelegateCommand(_ => _main.ShowInventoryView());
         }
     }
 }

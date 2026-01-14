@@ -9,6 +9,8 @@
     xmlns:viewsBooks="clr-namespace:BookStore.Presentation.Views.Books"
     xmlns:vmAuthors="clr-namespace:BookStore.Presentation.ViewModels.Authors"
     xmlns:viewsAuthors="clr-namespace:BookStore.Presentation.Views.Authors"
+    xmlns:vmInventory="clr-namespace:BookStore.Presentation.ViewModels.Inventory"
+    xmlns:viewsInventory="clr-namespace:BookStore.Presentation.Views.Inventory"
     StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
 
@@ -24,6 +26,10 @@
         
         <DataTemplate DataType="{x:Type vmAuthors:AuthorsViewModel}">
             <viewsAuthors:AuthorsView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vmInventory:InventoryViewModel}">
+            <viewsInventory:InventoryView />
         </DataTemplate>
 
         <Style 

@@ -3,6 +3,7 @@ using BookStore.Infrastructure.Data.Model;
 using BookStore.Presentation.State;
 using BookStore.Presentation.ViewModels.Authors;
 using BookStore.Presentation.ViewModels.Books;
+using BookStore.Presentation.ViewModels.Inventory;
 using BookStore.Presentation.ViewModels.Login;
 using BookStore.Presentation.ViewModels.Shell;
 using System;
@@ -45,51 +46,9 @@ namespace BookStore.Presentation.ViewModels
         {
             CurrentView = new AuthorsViewModel(Session);
         }
-
-        //public ObservableCollection<Store> Stores { get; private set; }
-
-        //private Store? _selectedStore;
-
-        //public Store SelectedStore
-        //{
-        //    get => _selectedStore;
-        //    set 
-        //    {
-        //        _selectedStore = value;
-        //        RaisedPropertyChanged();
-        //        LoadOrders();
-        //    }
-        //}
-
-        //public ObservableCollection<Order> Orders { get; private set; }
-
-        //public MainWindowViewModel()
-        //{
-        //    LoadStores();
-        //}
-
-        //private void LoadStores()
-        //{
-        //    using var db = new BookStoreContext();
-
-        //    Stores = new ObservableCollection<Store>(
-        //        db.Stores.ToList()
-        //    );
-
-        //    SelectedStore = Stores.FirstOrDefault();
-        //}
-
-        //private void LoadOrders()
-        //{
-        //    if (SelectedStore == null) return;
-
-        //    using var db = new BookStoreContext();
-
-        //    Orders = new ObservableCollection<Order>(
-        //        db.Orders
-        //        .Where(o => o.DestinationStoreId == SelectedStore.StoreId)
-        //        .ToList()
-        //    );
-        //}
+        public void ShowInventoryView()
+        {
+            CurrentView = new InventoryViewModel(Session);
+        }
     }
 }

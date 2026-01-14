@@ -40,6 +40,7 @@
 
         <Button 
             Content="Lagerstatus" 
+            Command="{Binding ShowInventoryCommand}"
             Style="{StaticResource NavButtonStyle}" />
 
         <Button 
