@@ -28,16 +28,7 @@ namespace BookStore.Presentation.ViewModels.Inventory
             }
         }
 
-        private ObservableCollection<StoreBook> _inventory = new();
-        public ObservableCollection<StoreBook> Inventory
-        {
-            get => _inventory;
-            set
-            {
-                _inventory = value;
-                RaisedPropertyChanged();
-            }
-        }
+        public ObservableCollection<DisplayInventory> Inventory { get; } = new();
 
         public InventoryViewModel(UserSession session)
         {
@@ -61,12 +52,35 @@ namespace BookStore.Presentation.ViewModels.Inventory
             using var db = new BookStoreContext();
 
             var items = db.StoreBooks
-                .Include(sb => sb.Isbn13Navigation)
-                    .ThenInclude(b => b.Authors)
                 .Where(sb => sb.StoreId == SelectedStore.StoreId)
-                .ToList();
+                .Select(sb => new DisplayInventory
+                {
+                    Title = sb.Isbn13Navigation.Title,
+                    Isbn13 = sb.Isbn13,
+                    Language = sb.Isbn13Navigation.Language,
+                    Genre = sb.Isbn13Navigation.Genre.Name,
+                    Format = sb.Isbn13Navigation.Format.Name,
+                    Authors = string.Join(", ", sb.Isbn13Navigation.Authors
+                        .Select(a => a.FirstName + " " + a.LastName)
+                    ),
+                    Quantity = sb.QuantityInStock
+                }).ToList();
 
-            Inventory = new ObservableCollection<StoreBook>(items);
+                Inventory.Clear();
+                foreach (var item in items)
+                {
+                    Inventory.Add(item);
+                }
+        }
+        public class DisplayInventory
+        {
+            public string Title { get; set; } = "";
+            public string Isbn13 { get; set; } = "";
+            public string Language { get; set; } = "";
+            public string Genre { get; set; } = "";
+            public string Format { get; set; } = "";
+            public string Authors { get; set; } = "";
+            public int Quantity { get; set; }
         }
     }
 }

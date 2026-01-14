@@ -8,32 +8,57 @@
     mc:Ignorable="d" 
     d:DesignHeight="450" d:DesignWidth="800"
     >
-    <Grid Margin="20">
+    <Grid Margin="-220 -60 0 0" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ComboBox 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        
+        <TextBlock 
             Grid.Row="0" 
+            Grid.Column="0" 
+            Text="Användarnamn: " 
+            VerticalAlignment="Center"
+            HorizontalAlignment="Right"/>
+        <ComboBox 
+            Grid.Row="0"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Left"
             ItemsSource="{Binding Users}" 
             SelectedItem="{Binding SelectedUser}" 
             DisplayMemberPath="LoginUserName" 
-            Margin="0 0 0 10" />
+            MinWidth="230" />
 
-        <ComboBox 
+        <TextBlock 
             Grid.Row="1" 
+            Grid.Column="0" 
+            Text="Butik: "
+            VerticalAlignment="Center"
+            HorizontalAlignment="Right" />
+        <ComboBox  
+            Grid.Row="1"
+            Grid.Column="1"
+            HorizontalAlignment="Left"
             ItemsSource="{Binding Stores}" 
             SelectedItem="{Binding SelectedStore}" 
-            DisplayMemberPath="DisplayStoreName"
-            Margin="0 0 0 10" />
+            DisplayMemberPath="CityAndAddress"
+            MinWidth="230" />
 
         <Button 
             Grid.Row="2" 
+            Grid.Column="1"
             Content="Login" 
             Command="{Binding LoginCommand}" 
             Width="100"
-            HorizontalAlignment="Center" />
+            HorizontalAlignment="Left"
+            Margin="0 20"/>
     </Grid>
 </UserControl>

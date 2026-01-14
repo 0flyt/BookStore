@@ -8,13 +8,22 @@
       d:DesignHeight="450" d:DesignWidth="800"
       >
 
-    <Grid Margin="10">
+    <Grid Background="WhiteSmoke" Margin="0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+        <TextBlock 
+            Grid.Row="0"
+            Text="Lagerstatus"
+            FontSize="24"
+            FontWeight="SemiBold"
+            VerticalAlignment="Center"
+            Margin="15,10,15,5" />
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
             <TextBlock Text="Butik:" VerticalAlignment="Center" Margin="0,0,5,0" />
             <ComboBox
                 Width="250"
@@ -25,33 +34,27 @@
         </StackPanel>
 
         <DataGrid 
+            Grid.Row="2"
+            Margin="10"
             HorizontalAlignment="Left"
-            Grid.Row="1"
             ItemsSource="{Binding Inventory}"
-            AutoGenerateColumns="False"
+            SelectionMode="Single"
+            SelectionUnit="FullRow"
+            AutoGenerateColumns="False" 
             CanUserAddRows="False"
-            IsReadOnly="True">
+            CanUserDeleteRows="False"
+            HeadersVisibility="Column"
+            IsReadOnly="true">
 
             <DataGrid.Columns>
-                <DataGridTextColumn
-                    Header="Titel"
-                    Binding="{Binding Isbn13Navigation.Title}"
-                    Width="200" />
+                <DataGridTextColumn Header="Titel" Binding="{Binding Title}" />
+                <DataGridTextColumn Header="Författare" Binding="{Binding Authors}" />
+                <DataGridTextColumn Header="Genre" Binding="{Binding Genre}" />
+                <DataGridTextColumn Header="Språk" Binding="{Binding Language}" />
+                <DataGridTextColumn Header="Format" Binding="{Binding Format}" />
+                <DataGridTextColumn Header="I lager" Binding="{Binding Quantity}" />
+                <DataGridTextColumn Header="ISBN" Binding="{Binding Isbn13}" />
 
-                <DataGridTextColumn
-                    Header="Författare"
-                    Binding="{Binding Isbn13Navigation.AuthorNames}"
-                    Width="200" />
-
-                <DataGridTextColumn
-                    Header="ISBN"
-                    Binding="{Binding Isbn13}"
-                    Width="120" />
-
-                <DataGridTextColumn
-                    Header="Antal"
-                    Binding="{Binding QuantityInStock}"
-                    Width="80" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

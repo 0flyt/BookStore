@@ -16,18 +16,28 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+        <TextBlock 
+            Grid.Row="0"
+            Text="Sök författare"
+            FontSize="24"
+            FontWeight="SemiBold"
+            VerticalAlignment="Center"
+            Margin="15,10,15,5" />
 
         <StackPanel 
             Orientation="Horizontal" 
             Margin="10" 
-            Grid.Row="0">
+            Grid.Row="1">
             
             <TextBox 
                 Width="300" Height="25"
                 Padding="5"
                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+            
             <Button 
                 Content="Sök"
                 Margin="5 0"
@@ -45,20 +55,20 @@
         </StackPanel>
 
         <TextBlock 
-            Grid.Row="2" 
+            Grid.Row="3" 
             Text="Sök på boktitel, författare, eller ISBN och tryck på sök."
             Margin="10"
             Visibility="{Binding IsBeforeSearch, Converter={StaticResource BoolToVisibilityConverter}}" />
 
         <TextBlock 
-            Grid.Row="2" 
+            Grid.Row="3" 
             Text="Inga författare hittades."
             Margin="10"
             Visibility="{Binding IsEmptyResult, Converter={StaticResource BoolToVisibilityConverter}}" />
 
 
         <TextBlock 
-            Grid.Row="1"
+            Grid.Row="2"
             Text="Klicka på en författare för att se en lista på deras böcker." 
             Margin="10" 
             FontStyle="Italic" 
@@ -66,7 +76,7 @@
             Visibility="{Binding HasResults, Converter={StaticResource BoolToVisibilityConverter}}" />
         
         <DataGrid 
-            Grid.Row="2" 
+            Grid.Row="3" 
             HorizontalAlignment="Left"
             ItemsSource="{Binding Authors}"
             SelectedItem="{Binding SelectedAuthor}"
@@ -87,7 +97,7 @@
         </DataGrid>
 
         <local:AuthorDetailsView 
-            Grid.Row="3" 
+            Grid.Row="4" 
             Visibility="{Binding IsAuthorSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
     </Grid>
 </UserControl>
