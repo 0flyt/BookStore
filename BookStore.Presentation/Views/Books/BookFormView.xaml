@@ -5,76 +5,215 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookStore.Presentation.Views.Books"
         mc:Ignorable="d"
-        Height="450" Width="800">
-    
-    
-    <StackPanel Margin="20">
-        <TextBlock Text="Titel"/>
-        <TextBox Text="{Binding Title}" />
+        >
 
-        <TextBlock Text="Författare" FontWeight="Bold" />
-        <ComboBox
-            ItemsSource="{Binding AllAuthors}"
-            SelectedItem="{Binding SelectedAuthor}"
-            DisplayMemberPath="FullName"
-            Width="250" />
+    <Grid 
+        Margin="20" 
+        HorizontalAlignment="Center" 
+        VerticalAlignment="Center">
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-        <Button
-            Content="Lägg till författare"
-            Command="{Binding AddAuthorCommand}"
-            Margin="0,5,0,10" />
+        <TextBlock 
+            Grid.Row="0" 
+            Text="Skapa/uppdatera bok" 
+            FontSize="24" 
+            FontWeight="Bold" 
+            HorizontalAlignment="Center"/>
 
-        <ItemsControl ItemsSource="{Binding SelectedAuthors}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding FullName}" />
-                        <Button
-                            Content="✕"
-                            Command="{Binding DataContext.RemoveAuthorCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                            CommandParameter="{Binding}"
-                            Margin="10,0,0,0" />
-                    </StackPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock 
+                Grid.Row="0" 
+                Grid.Column="0" 
+                Text="Titel:" 
+                VerticalAlignment="Center" 
+                Margin="0 5" />
+            <TextBox 
+                Grid.Row="0" 
+                Grid.Column="1" 
+                Text="{Binding Title}" 
+                Margin="5 5" />
+
+            <TextBlock 
+                Grid.Row="1" 
+                Grid.Column="0" 
+                Text="ISBN:" 
+                VerticalAlignment="Center" 
+                Margin="0 5" />
+            <TextBox 
+                Grid.Row="1" 
+                Grid.Column="1" 
+                Text="{Binding Isbn, UpdateSourceTrigger=PropertyChanged}" 
+                MaxLength="13" 
+                PreviewTextInput="OnlyDigits" 
+                Margin="5 5" />
+
+            <TextBlock 
+                Grid.Row="2" 
+                Grid.Column="0" 
+                Text="Pris:" 
+                VerticalAlignment="Center" 
+                Margin="0 5" />
+            <TextBox 
+                Grid.Row="2" 
+                Grid.Column="1" 
+                Text="{Binding Price}" 
+                Margin="5 5" />
+
+            <TextBlock 
+                Grid.Row="3" 
+                Grid.Column="0" 
+                Text="Språk:" 
+                VerticalAlignment="Center" 
+                Margin="0 5" />
+            <TextBox 
+                Grid.Row="3" 
+                Grid.Column="1" 
+                Text="{Binding Language}"
+                Margin="5 5" />
+
+            <TextBlock 
+                Grid.Row="4" 
+                Grid.Column="0" 
+                Text="Utgivningsår:" 
+                VerticalAlignment="Center" 
+                Margin="0 5" />
+            <DatePicker 
+                Grid.Row="4" 
+                Grid.Column="1" 
+                SelectedDate="{Binding Released, Mode=TwoWay}" 
+                Margin="5 5" />
+
+            <TextBlock 
+                Grid.Row="5" 
+                Grid.Column="0" 
+                Text="Genre:" 
+                VerticalAlignment="Center" 
+                Margin="0 5" />
+            <ComboBox 
+                Grid.Row="5" 
+                Grid.Column="1" 
+                ItemsSource="{Binding Genres}" 
+                SelectedItem="{Binding SelectedGenre}" 
+                DisplayMemberPath="Name" 
+                Margin="5 5" />
+
+            <TextBlock 
+                Grid.Row="6" 
+                Grid.Column="0" 
+                Text="Format:" 
+                VerticalAlignment="Center" 
+                Margin="0 5" />
+            <ComboBox 
+                Grid.Row="6" 
+                Grid.Column="1" 
+                ItemsSource="{Binding Formats}" 
+                SelectedItem="{Binding SelectedFormat}" 
+                DisplayMemberPath="Name" 
+                Margin="5 5" />
+
+            <TextBlock 
+                Grid.Row="7" 
+                Grid.Column="0" 
+                Text="Författare:" 
+                VerticalAlignment="Top" 
+                Margin="0 5" />
+            <StackPanel 
+                Grid.Row="7" 
+                Grid.Column="1" 
+                Orientation="Vertical" 
+                Margin="5 5">
+                <StackPanel 
+                    Orientation="Horizontal" 
+                    Margin="0 0 0 5">
+                    <ComboBox 
+                        ItemsSource="{Binding AllAuthors}" 
+                        SelectedItem="{Binding SelectedAuthor}" 
+                        DisplayMemberPath="FullName" 
+                        Width="150" />
+                    <Button 
+                        Content="Lägg till" 
+                        Command="{Binding AddAuthorCommand}" 
+                        Margin="5 0 0 0" />
+                </StackPanel>
+
+                <ItemsControl 
+                    ItemsSource="{Binding SelectedAuthors}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Background="#E0E0E0"
+                                CornerRadius="12"
+                                Padding="8 4"
+                                Margin="4"
+                                BorderThickness="2">
+
+                                <StackPanel 
+                                    Orientation="Horizontal">
+                                    <TextBlock
+                                        Text="{Binding FullName}"
+                                        Margin="0 0 6 0"/>
+
+                                    <Button
+                                        Content="✕"
+                                        FontWeight="Bold"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Command="{Binding DataContext.RemoveAuthorCommand,
+                                        RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
 
 
+        </Grid>
+            <StackPanel 
+                Grid.Row="3" 
+                Grid.ColumnSpan="2" 
+                Orientation="Horizontal" 
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Center">
+                <Button 
+                    Content="Spara" 
+                    Width="80"
+                    Margin="0 0 5 0"
+                    Command="{Binding SaveCommand}"/>
+                <Button 
+                    Content="Avbryt" 
+                    Width="80"
+                    Command="{Binding CancelCommand}" />
+            </StackPanel>
+    </Grid>
 
-        <TextBlock Text="ISBN"/>
-        <TextBox 
-            Text="{Binding Isbn, UpdateSourceTrigger=PropertyChanged}"
-            MaxLength="13"
-            PreviewTextInput="OnlyDigits" />
-
-        <TextBlock Text="Pris"/>
-        <TextBox Text="{Binding Price}" />
-
-        <TextBlock Text="Språk"/>
-        <TextBox Text="{Binding Language}" />
-
-        <TextBlock Text="Utgivningsår"/>
-        <DatePicker 
-            SelectedDate="{Binding Released, Mode=TwoWay}" 
-            Grid.Row="2" 
-            Grid.Column="1" 
-            Margin="0,0,0,5" />
-
-        <TextBlock Text="Genre"/>
-        <ComboBox 
-            ItemsSource="{Binding Genres}"
-            SelectedItem="{Binding SelectedGenre}"
-            DisplayMemberPath="Name"/>
-
-        <TextBlock Text="Format"/>
-        <ComboBox 
-            ItemsSource="{Binding Formats}"
-            SelectedItem="{Binding SelectedFormat}"
-            DisplayMemberPath="Name"/>
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Avbryt" Command="{Binding CancelCommand}" />
-            <Button Content="Spara" Command="{Binding SaveCommand}" />
-        </StackPanel>
-    </StackPanel>
 </UserControl>
