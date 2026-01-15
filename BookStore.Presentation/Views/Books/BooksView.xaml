@@ -60,7 +60,7 @@
 
         <TextBlock 
             Grid.Row="3" 
-            Text="Sök på boktitel, författare, eller ISBN och tryck på sök."
+            Text="Sök på boktitel, författare, eller ISBN."
             Margin="10"
             Visibility="{Binding IsBeforeSearch, Converter={StaticResource BoolToVisibilityConverter}}" />
 

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookStore.Presentation.Views.Authors"
         mc:Ignorable="d"
-        Title="Författare" Height="300" Width="400"
+        Title="Skapa/ändra författare" Height="300" Width="400"
         WindowStartupLocation="CenterOwner">
     
     <local:AuthorFormView />

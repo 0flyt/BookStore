@@ -1,6 +1,8 @@
 ﻿using BookStore.Domain;
 using BookStore.Infrastructure.Data.Model;
+using BookStore.Presentation.Commands;
 using BookStore.Presentation.State;
+using BookStore.Presentation.Views.Inventory;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace BookStore.Presentation.ViewModels.Inventory
 {
@@ -24,7 +27,7 @@ namespace BookStore.Presentation.ViewModels.Inventory
             {
                 _selectedStore = value;
                 RaisedPropertyChanged();
-                LoadInventory();
+                _ = LoadInventory();
             }
         }
 
@@ -61,11 +64,48 @@ namespace BookStore.Presentation.ViewModels.Inventory
             }
         }
 
+        private string _searchText = string.Empty;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                RaisedPropertyChanged();
+            }
+        }
+
+        public bool IsInventorySelected => SelectedInventory != null;
+
+        private DisplayInventory? _selectedInventory;
+        public DisplayInventory? SelectedInventory
+        {
+            get => _selectedInventory;
+            set
+            {
+                _selectedInventory = value;
+                RaisedPropertyChanged();
+                RaisedPropertyChanged(nameof(IsInventorySelected));
+                EditInventoryCommand.RaiseAndExecuteChanged();
+                DeleteInventoryCommand.RaiseAndExecuteChanged();
+            }
+        }
+
+
         public ObservableCollection<DisplayInventory> Inventory { get; } = new();
+
+        public DelegateCommand SearchInventoryCommand { get; }
+        public DelegateCommand EditInventoryCommand { get; }
+        public DelegateCommand DeleteInventoryCommand { get; }
 
         public InventoryViewModel(UserSession session)
         {
             Session = session;
+
+            SearchInventoryCommand = new DelegateCommand(async _ => await LoadInventory());
+            EditInventoryCommand = new DelegateCommand(_ => EditInventory(), _ => SelectedInventory != null);
+            DeleteInventoryCommand = new DelegateCommand(_ => DeleteInventory(), _ => SelectedInventory != null);
+
 
             using var db = new BookStoreContext();
 
@@ -74,7 +114,33 @@ namespace BookStore.Presentation.ViewModels.Inventory
             SelectedStore = Stores.FirstOrDefault(s => s.StoreId == Session.CurrentStore?.StoreId);
         }
 
-        private void LoadInventory()
+        private void EditInventory()
+        {
+            if (SelectedInventory == null) return;
+            OpenInventoryForm(SelectedInventory);
+        }
+        private void DeleteInventory()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OpenInventoryForm(DisplayInventory? inventory)
+        {
+            var vm = new InventoryFormViewModel(SelectedStore!, inventory);
+
+            var window = new InventoryFormWindow
+            {
+                DataContext = vm,
+                Owner = Application.Current.MainWindow
+            };
+
+            if (window.ShowDialog() == true)
+            {
+                _ = LoadInventory();
+            }
+        }
+
+        private async Task LoadInventory()
         {
             Inventory.Clear();
 
@@ -86,33 +152,61 @@ namespace BookStore.Presentation.ViewModels.Inventory
                 return;
             }
 
+            var items = await SearchInventory();
+            foreach (var item in items)
+                Inventory.Add(item);
+
+            TotalTitles = items.Count(i => i.Quantity > 0);
+            TotalQuantity = items.Sum(i => i.Quantity);
+            TotalValue = items.Sum(i => i.PriceAndQuantitiy);
+        }
+        private async Task<List<DisplayInventory>> SearchInventory()
+        {
             using var db = new BookStoreContext();
 
-            var items = db.StoreBooks
-                .Where(sb => sb.StoreId == SelectedStore.StoreId)
-                .Select(sb => new DisplayInventory
-                {
-                    Title = sb.Isbn13Navigation.Title,
-                    Isbn13 = sb.Isbn13,
-                    Language = sb.Isbn13Navigation.Language,
-                    Genre = sb.Isbn13Navigation.Genre.Name,
-                    Format = sb.Isbn13Navigation.Format.Name,
-                    Authors = string
-                        .Join(", ", sb.Isbn13Navigation.Authors
-                        .Select(a => a.FirstName + " " + a.LastName)),
-                    Quantity = sb.QuantityInStock,
-                    Price = sb.Isbn13Navigation.Price
-                }).ToList();
+            var query = db.Books
+                .Include(b => b.Authors)
+                .Include(b => b.Genre)
+                .Include(b => b.Format)
+                .AsQueryable();
 
-                foreach (var item in items)
-                {
-                    Inventory.Add(item);
-                }
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var search = SearchText.ToLower();
+                query = query.Where(b =>
+                    b.Title.ToLower().Contains(search) ||
+                    b.Isbn13.Contains(SearchText) ||
+                    b.Authors.Any(a =>
+                        a.FirstName.ToLower().Contains(search) ||
+                        a.LastName.ToLower().Contains(search))
+                );
+            }
 
-                TotalTitles = items.Count;
-                TotalQuantity = items.Sum(i => i.Quantity);
-                TotalValue = items.Sum(i => i.PriceAndQuantitiy);
+            var books = await query.ToListAsync();
+
+            var storeBooks = await db.StoreBooks
+                .Where(sb => sb.StoreId == SelectedStore!.StoreId)
+                .ToListAsync();
+
+            var items = books.Select(b =>
+            {
+                var sb = storeBooks.FirstOrDefault(s => s.Isbn13 == b.Isbn13);
+                return new DisplayInventory
+                {
+                    Title = b.Title,
+                    Isbn13 = b.Isbn13,
+                    Language = b.Language,
+                    Genre = b.Genre.Name,
+                    Format = b.Format.Name,
+                    Authors = string.Join(", ", b.Authors.Select(a => a.FirstName + " " + a.LastName)),
+                    Quantity = sb?.QuantityInStock ?? 0,
+                    Price = b.Price
+                };
+            }).ToList();
+
+            return items;
         }
+
         public class DisplayInventory
         {
             public string Title { get; set; } = "";

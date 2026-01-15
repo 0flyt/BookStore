@@ -20,7 +20,7 @@
 
         <TextBlock 
             Grid.Row="0" 
-            Text="Skapa/uppdatera bok" 
+            Text="Skapa/ändra bok" 
             FontSize="24" 
             FontWeight="Bold" 
             HorizontalAlignment="Center"/>
