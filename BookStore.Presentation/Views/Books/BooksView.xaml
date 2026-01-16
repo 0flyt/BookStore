@@ -18,7 +18,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="10" />
         </Grid.RowDefinitions>
 
         <TextBlock 
@@ -46,7 +45,7 @@
                 BorderThickness="0"
                 Cursor="Hand" />
             <CheckBox 
-                Content="Endast böcker i butik"
+                Content="Visa endast böcker i aktuell butik."
                 IsChecked="{Binding ShowOnlyCurrentStore}" 
                 VerticalAlignment="Center" Margin="10 0" />
 
@@ -108,7 +107,5 @@
         <local:BookDetailsView 
             Grid.Row="4" 
             Visibility="{Binding IsBookSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
-        
-        <ProgressBar Grid.Row="5" Height="10" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
     </Grid>
 </UserControl>

@@ -17,6 +17,7 @@ namespace BookStore.Presentation.ViewModels.Authors
     internal class AuthorsViewModel : ViewModelBase
     {
         public UserSession Session { get; }
+        private readonly MainWindowViewModel _main;
         public bool IsBeforeSearch { get; private set; } = true;
         public bool HasResults => Authors != null && Authors.Count > 0 && !IsBeforeSearch;
         public bool IsEmptyResult => !HasResults && !IsBeforeSearch;
@@ -29,7 +30,6 @@ namespace BookStore.Presentation.ViewModels.Authors
             {
                 _searchText = value;
                 RaisedPropertyChanged();
-                _ = SearchAuthors();
             }
         }
 
@@ -65,47 +65,60 @@ namespace BookStore.Presentation.ViewModels.Authors
         public DelegateCommand EditAuthorCommand { get; }
         public DelegateCommand DeleteAuthorCommand { get; }
 
-        public AuthorsViewModel(UserSession session)
+        public AuthorsViewModel(UserSession session, MainWindowViewModel main)
         {
             Session = session;
             SearchCommand = new DelegateCommand(_ => _ = SearchAuthors());
             AddAuthorCommand = new DelegateCommand(_ => OpenAuthorForm(null));
             EditAuthorCommand = new DelegateCommand(_ => OpenAuthorForm(SelectedAuthor), _ => SelectedAuthor != null);
-            DeleteAuthorCommand = new DelegateCommand(_ => DeleteAuthor(), _ => SelectedAuthor != null);
-
+            DeleteAuthorCommand = new DelegateCommand(_ => _ = DeleteAuthor(), _ => SelectedAuthor != null);
+            _main = main;
         }
 
         private async Task SearchAuthors()
         {
-            using var db = new BookStoreContext();
-
-            var query = db.Authors
-                .Include(a => a.Isbn13s)
-                .ThenInclude(a => a.Genre)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(SearchText))
+            _main.IsBusy = true;
+            try
             {
-                var search = SearchText.ToLower();
+                using var db = new BookStoreContext();
 
-                query = query.Where(a =>
-                    a.FirstName.ToLower().Contains(search) ||
-                    a.LastName.ToLower().Contains(SearchText) ||
-                    a.Isbn13s.Any(b =>
-                        b.Title.ToLower().Contains(search) ||
-                        b.Isbn13.Contains(SearchText)
-                    )
-                );
+                var query = db.Authors
+                    .Include(a => a.Isbn13s)
+                    .ThenInclude(a => a.Genre)
+                    .AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(SearchText))
+                {
+                    var search = SearchText.ToLower();
+
+                    query = query.Where(a =>
+                        a.FirstName.ToLower().Contains(search) ||
+                        a.LastName.ToLower().Contains(SearchText) ||
+                        a.Isbn13s.Any(b =>
+                            b.Title.ToLower().Contains(search) ||
+                            b.Isbn13.Contains(SearchText)
+                        )
+                    );
+                }
+
+                var result = await query.ToListAsync();
+
+                Authors = new ObservableCollection<Author>(result);
+                RaisedPropertyChanged(nameof(Authors));
+                IsBeforeSearch = false;
+                RaisedPropertyChanged(nameof(IsBeforeSearch));
+                RaisedPropertyChanged(nameof(HasResults));
+                RaisedPropertyChanged(nameof(IsEmptyResult));
+
             }
-
-            var result = await query.ToListAsync();
-
-            Authors = new ObservableCollection<Author>(query.ToList());
-            RaisedPropertyChanged(nameof(Authors));
-            IsBeforeSearch = false;
-            RaisedPropertyChanged(nameof(IsBeforeSearch));
-            RaisedPropertyChanged(nameof(HasResults));
-            RaisedPropertyChanged(nameof(IsEmptyResult));
+            catch
+            {
+                MessageBox.Show("Kunde inte söka författare.");
+            }
+            finally
+            {
+                _main.IsBusy = false;
+            }
         }
 
         private void OpenAuthorForm(Author? selectedAuthor = null)
@@ -123,12 +136,12 @@ namespace BookStore.Presentation.ViewModels.Authors
             }
         }
 
-        private void DeleteAuthor()
+        private async Task DeleteAuthor()
         {
             if (SelectedAuthor == null) return;
 
             var result = MessageBox.Show(
-                $"Är du säker på att du vill ta bort '{SelectedAuthor.FullName}' från databasen?",
+                $"Är du säker på att du vill ta bort författaren '{SelectedAuthor.FullName}' från databasen?",
                 "Bekräfta borttagning",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning
@@ -139,19 +152,18 @@ namespace BookStore.Presentation.ViewModels.Authors
 
             using var db = new BookStoreContext();
 
-            var author = db.Authors
+            var author = await db.Authors
                 .Include(a => a.Isbn13s)
-                .FirstOrDefault(a => a.Id == SelectedAuthor.Id);
+                .FirstOrDefaultAsync(a => a.Id == SelectedAuthor.Id);
 
             if (author == null) return;
-         
-            author.Isbn13s.Clear();
 
+            author.Isbn13s.Clear();
             db.Authors.Remove(author);
 
-            db.SaveChanges();
-          
-            _ = SearchAuthors();
+            await db.SaveChangesAsync();
+
+            await SearchAuthors();
         }
 
     }

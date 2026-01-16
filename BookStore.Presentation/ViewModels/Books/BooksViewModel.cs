@@ -17,22 +17,12 @@ namespace BookStore.Presentation.ViewModels.Books
     internal class BooksViewModel : ViewModelBase
     {
         public UserSession Session { get; }
+        private readonly MainWindowViewModel _main;
         public bool IsBeforeSearch { get; private set; } = true;
-
-        private bool _isBusy;
-        public bool IsBusy
-        {
-            get => _isBusy;
-            set
-            {
-                _isBusy = value;
-                RaisedPropertyChanged();
-            }
-        }
         public bool HasResults => Books != null && Books.Count > 0 && !IsBeforeSearch;
         public bool IsEmptyResult => !HasResults && !IsBeforeSearch;
 
-        private bool _showOnlyCurrentStore = true;
+        private bool _showOnlyCurrentStore = false;
         public bool ShowOnlyCurrentStore
         {
             get => _showOnlyCurrentStore;
@@ -86,76 +76,99 @@ namespace BookStore.Presentation.ViewModels.Books
         public DelegateCommand AddBookCommand { get; }
         public DelegateCommand EditBookCommand { get; }
         public DelegateCommand DeleteBookCommand { get; }
-        public BooksViewModel(UserSession session)
+        public BooksViewModel(UserSession session, MainWindowViewModel main)
         {
             Session = session;
+            _main = main;
 			SearchCommand = new DelegateCommand(async _ => await SearchBooks());
             AddBookCommand = new DelegateCommand(_ => AddBook());
             EditBookCommand = new DelegateCommand(_ => EditBook(), _ => SelectedBook != null);
-            DeleteBookCommand = new DelegateCommand(_ => DeleteBook(), _ => SelectedBook != null);
-
-
-            LoadBooks();
+            DeleteBookCommand = new DelegateCommand(async _ => await DeleteBook(), _ => SelectedBook != null);
         }
 
-        private void LoadBooks()
+        private async Task LoadBooks()
         {
-            using var db = new BookStoreContext();
+            _main.IsBusy = true;
+            try
+            {
+                using var db = new BookStoreContext();
 
-            Books = new ObservableCollection<Book>(db.Books
-                .Include(b => b.Authors)
-                .Include(b => b.Format)
-                .Include(b => b.Genre)
-                .Include(b => b.StoreBooks)
-                    .ThenInclude(sb => sb.Store)
-                .ToList()
-                );
+                var books = await db.Books
+                    .Include(b => b.Authors)
+                    .Include(b => b.Format)
+                    .Include(b => b.Genre)
+                    .Include(b => b.StoreBooks)
+                        .ThenInclude(sb => sb.Store)
+                    .ToListAsync();
+
+                Books = new ObservableCollection<Book>(books);
+                IsBeforeSearch = true;
+                RaisedPropertyChanged(nameof(Books));
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Kunde inte ladda böcker: {ex.Message}", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         private async Task SearchBooks()
 		{
-            IsBusy = true;
-
-            using var db = new BookStoreContext();
-
-            var query = db.Books
-                .Include(b => b.Authors)
-                .Include(b => b.Format)
-                .Include(b => b.Genre)
-                .Include(b => b.StoreBooks)
-                    .ThenInclude(sb => sb.Store)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(SearchText))
+            _main.IsBusy = true;
+            try
             {
-                var search = SearchText.ToLower();
+                using var db = new BookStoreContext();
 
-                query = query.Where(b =>
-                    b.Title.ToLower().Contains(search) ||
-                    b.Isbn13.Contains(SearchText) ||
-                    b.Authors.Any(a =>
-                        a.FirstName.ToLower().Contains(search) ||
-                        a.LastName.ToLower().Contains(search))
-                );
+                var query = db.Books
+                    .Include(b => b.Authors)
+                    .Include(b => b.Format)
+                    .Include(b => b.Genre)
+                    .Include(b => b.StoreBooks)
+                        .ThenInclude(sb => sb.Store)
+                    .AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(SearchText))
+                {
+                    var search = SearchText.ToLower();
+
+                    query = query.Where(b =>
+                        b.Title.ToLower().Contains(search) ||
+                        b.Isbn13.Contains(SearchText) ||
+                        b.Authors.Any(a =>
+                            a.FirstName.ToLower().Contains(search) ||
+                            a.LastName.ToLower().Contains(search))
+                    );
+                }
+
+                if (ShowOnlyCurrentStore && Session.CurrentStore != null)
+                {
+                    query = query.Where(b =>
+                        b.StoreBooks.Any(sb => sb.StoreId == Session.CurrentStore.StoreId)
+                    );
+                }
+
+                var results = await query.ToListAsync();
+
+                Books = new ObservableCollection<Book>(results);
+                IsBeforeSearch = false;
+
+                RaisedPropertyChanged(nameof(Books));
+                RaisedPropertyChanged(nameof(IsBeforeSearch));
+                RaisedPropertyChanged(nameof(HasResults));
+                RaisedPropertyChanged(nameof(IsEmptyResult));
             }
-
-            if (ShowOnlyCurrentStore && Session.CurrentStore != null)
+            catch (Exception ex)
             {
-                query = query.Where(b =>
-                    b.StoreBooks.Any(sb => sb.StoreId == Session.CurrentStore.StoreId)
-                );
+                MessageBox.Show($"Kunde inte söka böcker: {ex.Message}", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            var results = await query.ToListAsync();
-
-            Books = new ObservableCollection<Book>(query.ToList());
-            RaisedPropertyChanged(nameof(Books));
-            IsBeforeSearch = false;
-            RaisedPropertyChanged(nameof(IsBeforeSearch));
-            RaisedPropertyChanged(nameof(HasResults));
-            RaisedPropertyChanged(nameof(IsEmptyResult));
-
-            IsBusy = false;
+            finally
+            {
+                _main.IsBusy = false;
+            }
         }
 
         private void AddBook()
@@ -183,11 +196,11 @@ namespace BookStore.Presentation.ViewModels.Books
 
             if (result == true)
             {
-                LoadBooks();
+                _ = LoadBooks();
             }
         }
 
-        private void DeleteBook()
+        private async Task DeleteBook()
         {
             if (SelectedBook == null) return;
 
@@ -201,28 +214,35 @@ namespace BookStore.Presentation.ViewModels.Books
             if (result != MessageBoxResult.Yes)
                 return;
 
-            using var db = new BookStoreContext();
-
-            var book = db.Books
-                .Include(b => b.Authors)
-                .Include(b => b.StoreBooks)
-                .FirstOrDefault(b => b.Isbn13 == SelectedBook.Isbn13);
-
-            if (book != null)
+            _main.IsBusy = true;
+            try
             {
-                book.Authors.Clear();
-                book.StoreBooks.Clear();
+                using var db = new BookStoreContext();
 
-                db.SaveChanges();
+                var book = await db.Books
+                    .Include(b => b.Authors)
+                    .Include(b => b.StoreBooks)
+                    .FirstOrDefaultAsync(b => b.Isbn13 == SelectedBook.Isbn13);
 
-                db.Books.Remove(book);
+                if (book != null)
+                {
+                    book.Authors.Clear();
+                    book.StoreBooks.Clear();
 
-                db.SaveChanges();
+                    db.Books.Remove(book);
+
+                    await db.SaveChangesAsync();
+                    await LoadBooks();
+                }
             }
-
-            LoadBooks();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Kunde inte ta bort boken: {ex.Message}", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _main.IsBusy = false;
+            }
         }
-
-
     }
 }

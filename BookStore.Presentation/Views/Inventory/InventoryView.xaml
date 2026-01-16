@@ -139,6 +139,6 @@
             </StackPanel>
 
         </Grid>
-        <ProgressBar Grid.Row="5" Height="10" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
+        <!--<ProgressBar Grid.Row="5" Height="10" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />-->
     </Grid>
 </UserControl>

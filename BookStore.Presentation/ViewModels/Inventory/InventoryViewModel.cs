@@ -17,6 +17,7 @@ namespace BookStore.Presentation.ViewModels.Inventory
     internal class InventoryViewModel : ViewModelBase
     {
         public UserSession Session { get; }
+        private readonly MainWindowViewModel _main;
 
         public ObservableCollection<Store> Stores { get; }
         private Store? _selectedStore;
@@ -28,17 +29,6 @@ namespace BookStore.Presentation.ViewModels.Inventory
                 _selectedStore = value;
                 RaisedPropertyChanged();
                 _ = LoadInventory();
-            }
-        }
-
-        private bool _isBusy;
-        public bool IsBusy
-        {
-            get => _isBusy;
-            set
-            {
-                _isBusy = value;
-                RaisedPropertyChanged();
             }
         }
 
@@ -102,20 +92,20 @@ namespace BookStore.Presentation.ViewModels.Inventory
             }
         }
 
-
         public ObservableCollection<DisplayInventory> Inventory { get; } = new();
 
         public DelegateCommand SearchInventoryCommand { get; }
         public DelegateCommand EditInventoryCommand { get; }
         public DelegateCommand DeleteInventoryCommand { get; }
 
-        public InventoryViewModel(UserSession session)
+        public InventoryViewModel(UserSession session, MainWindowViewModel main)
         {
             Session = session;
+            _main = main;
 
             SearchInventoryCommand = new DelegateCommand(async _ => await LoadInventory());
             EditInventoryCommand = new DelegateCommand(_ => EditInventory(), _ => SelectedInventory != null);
-            DeleteInventoryCommand = new DelegateCommand(_ => DeleteInventory(), _ => SelectedInventory != null);
+            DeleteInventoryCommand = new DelegateCommand(async _ => await DeleteInventory(), _ => SelectedInventory != null);
 
 
             using var db = new BookStoreContext();
@@ -130,28 +120,38 @@ namespace BookStore.Presentation.ViewModels.Inventory
             if (SelectedInventory == null) return;
             OpenInventoryForm(SelectedInventory);
         }
-        private async void DeleteInventory()
+        private async Task DeleteInventory()
         {
-            if (SelectedInventory == null || SelectedStore == null)
-                return;
+            if (SelectedInventory == null || SelectedStore == null) return;
 
             var result = MessageBox.Show(
-                $"Vill du ta bort '{SelectedInventory.Title}' från lagret?",
+                $"Vill du ta bort '{SelectedInventory.Title}' från butikens lager?",
                 "Bekräfta borttagning",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
-            if (result != MessageBoxResult.Yes)
-                return;
+            if (result != MessageBoxResult.Yes) return;
 
-            using var db = new BookStoreContext();
-
-            var storeBook = await db.StoreBooks.FirstOrDefaultAsync(sb => sb.StoreId == SelectedStore.StoreId && sb.Isbn13 == SelectedInventory.Isbn13);
-
-            if (storeBook != null)
+            _main.IsBusy = true;
+            try
             {
-                storeBook.QuantityInStock = 0;
-                await db.SaveChangesAsync();
+                using var db = new BookStoreContext();
+
+                var storeBook = await db.StoreBooks.FirstOrDefaultAsync(sb => sb.StoreId == SelectedStore.StoreId && sb.Isbn13 == SelectedInventory.Isbn13);
+
+                if (storeBook != null)
+                {
+                    storeBook.QuantityInStock = 0;
+                    await db.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Kunde inte ta bort boken: {ex.Message}", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _main.IsBusy = false;
             }
 
             await LoadInventory();
@@ -175,9 +175,6 @@ namespace BookStore.Presentation.ViewModels.Inventory
 
         private async Task LoadInventory()
         {
-            IsBusy = true;
-            Inventory.Clear();
-
             if (SelectedStore == null)
             {
                 TotalTitles = 0;
@@ -186,61 +183,89 @@ namespace BookStore.Presentation.ViewModels.Inventory
                 return;
             }
 
-            var items = await SearchInventory();
-            foreach (var item in items)
-                Inventory.Add(item);
+            _main.IsBusy = true;
 
-            TotalTitles = items.Count(i => i.Quantity > 0);
-            TotalQuantity = items.Sum(i => i.Quantity);
-            TotalValue = items.Sum(i => i.PriceAndQuantitiy);
+            try
+            {
+                Inventory.Clear();
+
+                var items = await SearchInventory();
+                foreach (var item in items)
+                    Inventory.Add(item);
+
+                TotalTitles = items.Count(i => i.Quantity > 0);
+                TotalQuantity = items.Sum(i => i.Quantity);
+                TotalValue = items.Sum(i => i.PriceAndQuantitiy);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Kunde inte ladda lagret: {ex.Message}", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _main.IsBusy = false;
+            }
         }
         private async Task<List<DisplayInventory>> SearchInventory()
         {
-            using var db = new BookStoreContext();
+            _main.IsBusy = true;
 
-            var query = db.Books
-                .Include(b => b.Authors)
-                .Include(b => b.Genre)
-                .Include(b => b.Format)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(SearchText))
+            try
             {
-                var search = SearchText.ToLower();
-                query = query.Where(b =>
-                    b.Title.ToLower().Contains(search) ||
-                    b.Isbn13.Contains(SearchText) ||
-                    b.Authors.Any(a =>
-                        a.FirstName.ToLower().Contains(search) ||
-                        a.LastName.ToLower().Contains(search))
-                );
-            }
+                using var db = new BookStoreContext();
 
-            var books = await query.ToListAsync();
+                var query = db.Books
+                    .Include(b => b.Authors)
+                    .Include(b => b.Genre)
+                    .Include(b => b.Format)
+                    .AsQueryable();
 
-            var storeBooks = await db.StoreBooks
-                .Where(sb => sb.StoreId == SelectedStore!.StoreId)
-                .ToListAsync();
-
-            var items = books.Select(b =>
-            {
-                var sb = storeBooks.FirstOrDefault(s => s.Isbn13 == b.Isbn13);
-                return new DisplayInventory
+                if (!string.IsNullOrWhiteSpace(SearchText))
                 {
-                    Title = b.Title,
-                    Isbn13 = b.Isbn13,
-                    Language = b.Language,
-                    Genre = b.Genre.Name,
-                    Format = b.Format.Name,
-                    Authors = string.Join(", ", b.Authors.Select(a => a.FirstName + " " + a.LastName)),
-                    Quantity = sb?.QuantityInStock ?? 0,
-                    Price = b.Price
-                };
-            }).ToList();
+                    var search = SearchText.ToLower();
+                    query = query.Where(b =>
+                        b.Title.ToLower().Contains(search) ||
+                        b.Isbn13.Contains(SearchText) ||
+                        b.Authors.Any(a =>
+                            a.FirstName.ToLower().Contains(search) ||
+                            a.LastName.ToLower().Contains(search))
+                    );
+                }
 
-            IsBusy = false;
-            return items;
+                var books = await query.ToListAsync();
 
+                var storeBooks = await db.StoreBooks
+                    .Where(sb => sb.StoreId == SelectedStore!.StoreId)
+                    .ToListAsync();
+
+                var items = books.Select(b =>
+                {
+                    var sb = storeBooks.FirstOrDefault(s => s.Isbn13 == b.Isbn13);
+                    return new DisplayInventory
+                    {
+                        Title = b.Title,
+                        Isbn13 = b.Isbn13,
+                        Language = b.Language,
+                        Genre = b.Genre.Name,
+                        Format = b.Format.Name,
+                        Authors = string.Join(", ", b.Authors.Select(a => a.FirstName + " " + a.LastName)),
+                        Quantity = sb?.QuantityInStock ?? 0,
+                        Price = b.Price
+                    };
+                }).ToList();
+
+                return items;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Kunde inte söka i lagret: {ex.Message}", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
+                return new List<DisplayInventory>();
+            }
+            finally
+            {
+                _main.IsBusy = false;
+            }
         }
 
         public class DisplayInventory

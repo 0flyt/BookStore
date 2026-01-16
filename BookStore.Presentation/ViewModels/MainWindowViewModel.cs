@@ -40,15 +40,15 @@ namespace BookStore.Presentation.ViewModels
         }
         public void ShowBooksView()
         {
-            CurrentView = new BooksViewModel(Session);
+            CurrentView = new BooksViewModel(Session, this);
         }
         public void ShowAuthorsView()
         {
-            CurrentView = new AuthorsViewModel(Session);
+            CurrentView = new AuthorsViewModel(Session, this);
         }
         public void ShowInventoryView()
         {
-            CurrentView = new InventoryViewModel(Session);
+            CurrentView = new InventoryViewModel(Session, this);
         }
     }
 }
