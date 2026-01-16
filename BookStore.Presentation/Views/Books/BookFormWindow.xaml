@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:BookStore.Presentation.Views.Books"
         mc:Ignorable="d"
-        Title="Skapa/ändra bok" Height="600" Width="400" MinHeight="600" MinWidth="400"
-        WindowStartupLocation="CenterOwner">
-    
+        Title="Skapa/ändra bok" 
+        WindowStartupLocation="CenterOwner" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+
+
     <views:BookFormView />
-    
+
 </Window>
