@@ -20,11 +20,11 @@ The script will:
 ### 3. Configure connection string
 
 The application uses .NET User Secrets for the database connection string.
-
-Run the following command in the **BookStore.Infrastructure** project directory:
+Right-click on solution and open terminal.
+Run the following command:
 
 ```bash
-dotnet user-secrets set "ConnectionString" "Initial Catalog=BookStore;Integrated Security=True;Trust Server Certificate=True;Server SPN=localhost"
+dotnet user-secrets --project .\BookStore.Infrastructure\BookStore.Infrastructure.csproj set "ConnectionString" "Initial Catalog=BookStore;Integrated Security=True;Trust Server Certificate=True;Server SPN=localhost"
 ```
 
 ### 4. Run the application
