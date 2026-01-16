@@ -26,7 +26,8 @@
             Grid.Column="0" 
             Text="Användarnamn: " 
             VerticalAlignment="Center"
-            HorizontalAlignment="Right"/>
+            HorizontalAlignment="Right" 
+            Margin="10" />
         <ComboBox 
             Grid.Row="0"
             Grid.Column="1"
@@ -35,14 +36,16 @@
             ItemsSource="{Binding Users}" 
             SelectedItem="{Binding SelectedUser}" 
             DisplayMemberPath="LoginUserName" 
-            MinWidth="230" />
+            MinWidth="230"
+            Margin="10" />
 
         <TextBlock 
             Grid.Row="1" 
             Grid.Column="0" 
             Text="Butik: "
             VerticalAlignment="Center"
-            HorizontalAlignment="Right" />
+            HorizontalAlignment="Right"
+            Margin="10 "/>
         <ComboBox  
             Grid.Row="1"
             Grid.Column="1"
@@ -50,7 +53,8 @@
             ItemsSource="{Binding Stores}" 
             SelectedItem="{Binding SelectedStore}" 
             DisplayMemberPath="CityAndAddress"
-            MinWidth="230" />
+            MinWidth="230"
+            Margin="10"/>
 
         <Button 
             Grid.Row="2" 
@@ -58,7 +62,7 @@
             Content="Login" 
             Command="{Binding LoginCommand}" 
             Width="100"
-            HorizontalAlignment="Left"
+            HorizontalAlignment="Center"
             Margin="0 20"/>
     </Grid>
 </UserControl>

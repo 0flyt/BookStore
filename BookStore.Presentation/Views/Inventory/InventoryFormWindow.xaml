@@ -59,6 +59,7 @@
                 Padding="3"
                 Width="50"
                 Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
+                PreviewTextInput="OnlyDigits" 
                 FontWeight="Bold"
                 FontSize="16" />
             

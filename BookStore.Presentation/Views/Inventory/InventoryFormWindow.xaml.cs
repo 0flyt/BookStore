@@ -36,5 +36,9 @@ namespace BookStore.Presentation.Views.Inventory
                 }
             };
         }
+        private void OnlyDigits(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !e.Text.All(char.IsDigit);
+        }
     }
 }
