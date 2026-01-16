@@ -157,7 +157,7 @@ namespace BookStore.Presentation.ViewModels.Inventory
             await LoadInventory();
         }
 
-        private void OpenInventoryForm(DisplayInventory? inventory)
+        private void OpenInventoryForm(DisplayInventory inventory)
         {
             var vm = new InventoryFormViewModel(SelectedStore!, inventory);
 

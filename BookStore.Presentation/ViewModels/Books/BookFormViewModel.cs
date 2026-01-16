@@ -277,7 +277,7 @@ namespace BookStore.Presentation.ViewModels.Books
                 db.SaveChanges();
                 CloseAction?.Invoke(true);
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
                 MessageBox.Show(
                     "Kunde inte spara boken.\nKontrollera att ISBN är unikt och att alla fält är korrekt ifyllda.",
@@ -286,7 +286,7 @@ namespace BookStore.Presentation.ViewModels.Books
                     MessageBoxImage.Error
                 );
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show(
                     "Ett oväntat fel inträffade.",

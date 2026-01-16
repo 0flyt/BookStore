@@ -182,7 +182,7 @@ namespace BookStore.Presentation.ViewModels.Books
             OpenBookForm(SelectedBook);
         }
 
-        private void OpenBookForm(Book selectedBook)
+        private void OpenBookForm(Book? selectedBook)
         {
             var vm = new BookFormViewModel(selectedBook);
 
