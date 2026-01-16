@@ -18,11 +18,13 @@ The script will:
 - Create views, procedures and user-defined types
 
 ### 3. Configure connection string
-The application uses User Secrets for the connection string.
 
-Set it using:
+The application uses .NET User Secrets for the database connection string.
+
+Run the following command in the **BookStore.Infrastructure** project directory:
+
 ```bash
-dotnet user-secrets set "ConnectionString": "Initial Catalog=BookStore;Integrated Security=True;Trust Server Certificate=True;Server SPN=localhost"
+dotnet user-secrets set "ConnectionString" "Initial Catalog=BookStore;Integrated Security=True;Trust Server Certificate=True;Server SPN=localhost"
 ```
 
 ### 4. Run the application
