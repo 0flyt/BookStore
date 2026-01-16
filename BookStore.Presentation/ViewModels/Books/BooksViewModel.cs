@@ -197,6 +197,7 @@ namespace BookStore.Presentation.ViewModels.Books
             if (result == true)
             {
                 _ = LoadBooks();
+                if (_main.IsBusy == true) _main.IsBusy = false;
             }
         }
 

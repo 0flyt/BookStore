@@ -162,7 +162,7 @@ namespace BookStore.Presentation.ViewModels.Books
                 },
                 a => a is Author
             );
-            SaveCommand = new DelegateCommand(_ => Save());
+            SaveCommand = new DelegateCommand(async _ => await Save());
             CancelCommand = new DelegateCommand(_ => CloseAction?.Invoke(false));
         }
 
@@ -180,9 +180,7 @@ namespace BookStore.Presentation.ViewModels.Books
             SelectedAuthors.Remove(author);
         }
 
-
-
-        private void Save()
+        private async Task Save()
         {
             if (string.IsNullOrWhiteSpace(Title))
             {
@@ -218,28 +216,22 @@ namespace BookStore.Presentation.ViewModels.Books
                 MessageBox.Show("Minst en författare måste anges. Om författare inte finns i listan måste denna läggas in innan bok kan skapas.");
                 return;
             }
+
             using var db = new BookStoreContext();
 
             Book book;
 
             if (IsEditMode)
             {
-                book = db.Books
+                book = await db.Books
                     .Include(b => b.Authors)
-                    .First(b => b.Isbn13 == _originalBook!.Isbn13);
+                    .FirstAsync(b => b.Isbn13 == _originalBook!.Isbn13);
             }
             else
             {
-                bool isbnExists = db.Books.Any(b => b.Isbn13 == Isbn);
-
-                if (isbnExists)
+                if (await db.Books.AnyAsync(b => b.Isbn13 == Isbn))
                 {
-                    MessageBox.Show(
-                        "En bok med detta ISBN finns redan.",
-                        "Fel",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning
-                    );
+                    MessageBox.Show("En bok med detta ISBN finns redan.", "Fel", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -264,7 +256,7 @@ namespace BookStore.Presentation.ViewModels.Books
 
             foreach (var author in SelectedAuthors)
             {
-                var authorInDb = db.Authors.Find(author.Id);
+                var authorInDb = await db.Authors.FindAsync(author.Id);
                 if (authorInDb != null)
                 {
                     book.Authors.Add(authorInDb);
@@ -274,7 +266,7 @@ namespace BookStore.Presentation.ViewModels.Books
 
             try
             {
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 CloseAction?.Invoke(true);
             }
             catch (DbUpdateException)
@@ -296,7 +288,5 @@ namespace BookStore.Presentation.ViewModels.Books
                 );
             }
         }
-
-
     }
 }

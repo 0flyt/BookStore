@@ -47,34 +47,34 @@ namespace BookStore.Presentation.ViewModels.Inventory
             Quantity = inventory.Quantity;
             RaisedPropertyChanged(nameof(Quantity));
 
-            SaveCommand = new DelegateCommand(_ => Save(), _ => Quantity >= 0);
+            SaveCommand = new DelegateCommand(async _ => await Save(), _ => Quantity >= 0);
             CancelCommand = new DelegateCommand(_ => CloseAction?.Invoke(false));
         }
 
-        private void Save()
+        private async Task Save()
         {
-            using var db = new BookStoreContext();
-
-            var storeBook = db.StoreBooks.FirstOrDefault(sb =>
-                sb.StoreId == _store.StoreId &&
-                sb.Isbn13 == _isbn13
-            );
-
-            if (storeBook == null)
-            {
-                storeBook = new StoreBook
-                {
-                    StoreId = _store.StoreId,
-                    Isbn13 = _isbn13
-                };
-                db.StoreBooks.Add(storeBook);
-            }
-
-            storeBook.QuantityInStock = Quantity;
-
             try
             {
-                db.SaveChanges();
+                using var db = new BookStoreContext();
+
+                var storeBook = await db.StoreBooks.FirstOrDefaultAsync(sb =>
+                    sb.StoreId == _store.StoreId &&
+                    sb.Isbn13 == _isbn13
+                );
+
+                if (storeBook == null)
+                {
+                    storeBook = new StoreBook
+                    {
+                        StoreId = _store.StoreId,
+                        Isbn13 = _isbn13
+                    };
+                    db.StoreBooks.Add(storeBook);
+                }
+
+                storeBook.QuantityInStock = Quantity;
+
+                await db.SaveChangesAsync();
                 CloseAction?.Invoke(true);
             }
             catch
@@ -85,6 +85,10 @@ namespace BookStore.Presentation.ViewModels.Inventory
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
                 );
+            }
+            finally
+            {
+                SaveCommand.RaiseAndExecuteChanged();
             }
         }
     }
