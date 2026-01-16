@@ -31,6 +31,17 @@ namespace BookStore.Presentation.ViewModels.Inventory
             }
         }
 
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
+                RaisedPropertyChanged();
+            }
+        }
+
         private int _totalTitles;
         public int TotalTitles
         {
@@ -119,9 +130,31 @@ namespace BookStore.Presentation.ViewModels.Inventory
             if (SelectedInventory == null) return;
             OpenInventoryForm(SelectedInventory);
         }
-        private void DeleteInventory()
+        private async void DeleteInventory()
         {
-            throw new NotImplementedException();
+            if (SelectedInventory == null || SelectedStore == null)
+                return;
+
+            var result = MessageBox.Show(
+                $"Vill du ta bort '{SelectedInventory.Title}' från lagret?",
+                "Bekräfta borttagning",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            using var db = new BookStoreContext();
+
+            var storeBook = await db.StoreBooks.FirstOrDefaultAsync(sb => sb.StoreId == SelectedStore.StoreId && sb.Isbn13 == SelectedInventory.Isbn13);
+
+            if (storeBook != null)
+            {
+                storeBook.QuantityInStock = 0;
+                await db.SaveChangesAsync();
+            }
+
+            await LoadInventory();
         }
 
         private void OpenInventoryForm(DisplayInventory? inventory)
@@ -142,6 +175,7 @@ namespace BookStore.Presentation.ViewModels.Inventory
 
         private async Task LoadInventory()
         {
+            IsBusy = true;
             Inventory.Clear();
 
             if (SelectedStore == null)
@@ -204,7 +238,9 @@ namespace BookStore.Presentation.ViewModels.Inventory
                 };
             }).ToList();
 
+            IsBusy = false;
             return items;
+
         }
 
         public class DisplayInventory

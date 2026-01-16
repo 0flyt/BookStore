@@ -8,12 +8,18 @@
       d:DesignHeight="450" d:DesignWidth="800"
       >
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+
     <Grid Background="WhiteSmoke" Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="10" />
         </Grid.RowDefinitions>
 
         <TextBlock 
@@ -77,29 +83,62 @@
             <TextBlock Text="{Binding TotalValue, StringFormat={}{0:N0} kr}"/>
         </StackPanel>
 
-        <DataGrid 
-            Grid.Row="3"
-            Margin="10"
-            HorizontalAlignment="Left"
-            ItemsSource="{Binding Inventory}"
-            SelectionMode="Single"
-            SelectionUnit="FullRow"
-            AutoGenerateColumns="False" 
-            CanUserAddRows="False"
-            CanUserDeleteRows="False"
-            HeadersVisibility="Column"
-            IsReadOnly="true">
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            
+            <DataGrid 
+                Margin="10"
+                HorizontalAlignment="Left"
+                ItemsSource="{Binding Inventory}"
+                SelectedItem="{Binding SelectedInventory}"
+                SelectionMode="Single"
+                SelectionUnit="FullRow"
+                AutoGenerateColumns="False" 
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                HeadersVisibility="Column"
+                IsReadOnly="true">
 
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Titel" Binding="{Binding Title}" />
-                <DataGridTextColumn Header="Författare" Binding="{Binding Authors}" />
-                <DataGridTextColumn Header="Genre" Binding="{Binding Genre}" />
-                <DataGridTextColumn Header="Språk" Binding="{Binding Language}" />
-                <DataGridTextColumn Header="Format" Binding="{Binding Format}" />
-                <DataGridTextColumn Header="I lager" Binding="{Binding Quantity}" />
-                <DataGridTextColumn Header="ISBN" Binding="{Binding Isbn13}" />
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Titel" Binding="{Binding Title}" />
+                    <DataGridTextColumn Header="Författare" Binding="{Binding Authors}" />
+                    <DataGridTextColumn Header="Genre" Binding="{Binding Genre}" />
+                    <DataGridTextColumn Header="Språk" Binding="{Binding Language}" />
+                    <DataGridTextColumn Header="Format" Binding="{Binding Format}" />
+                    <DataGridTextColumn Header="I lager" Binding="{Binding Quantity}" />
+                    <DataGridTextColumn Header="ISBN" Binding="{Binding Isbn13}" />
 
-            </DataGrid.Columns>
-        </DataGrid>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel 
+                Grid.Column="1" 
+                Orientation="Horizontal" 
+                VerticalAlignment="Top" 
+                HorizontalAlignment="Left"
+                Visibility="{Binding IsInventorySelected, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                <Button
+                    Margin="10"
+                    Padding="5 0"
+                    FontSize="14"
+                    Content="Ändra antal"
+                    Command="{Binding EditInventoryCommand}"
+                    IsEnabled="{Binding IsInventorySelected}" />
+
+                <Button
+                    Margin="0 10"
+                    Padding="5 0"
+                    FontSize="14"
+                    Content="Nollställ antal"
+                    Command="{Binding DeleteInventoryCommand}"
+                    IsEnabled="{Binding IsInventorySelected}" />
+            </StackPanel>
+
+        </Grid>
+        <ProgressBar Grid.Row="5" Height="10" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
     </Grid>
 </UserControl>

@@ -17,23 +17,10 @@ namespace BookStore.Presentation.ViewModels.Inventory
     {
         private readonly Store _store;
         public Store Store => _store;
-        private readonly StoreBook? _originalStoreBook;
+        private readonly string _isbn13;
 
-        public bool IsEditMode => _originalStoreBook != null;
-
-        public ObservableCollection<Book> Books { get; }
-
-        private Book? _selectedBook;
-        public Book? SelectedBook
-        {
-            get => _selectedBook;
-            set
-            {
-                _selectedBook = value;
-                RaisedPropertyChanged();
-                SaveCommand?.RaiseAndExecuteChanged();
-            }
-        }
+        public string Title { get; }
+        public string Isbn13 => _isbn13;
 
         private int _quantity;
         public int Quantity
@@ -52,97 +39,34 @@ namespace BookStore.Presentation.ViewModels.Inventory
 
         public Action<bool>? CloseAction { get; set; }
 
-        public InventoryFormViewModel(Store store, DisplayInventory? inventory)
+        public InventoryFormViewModel(Store store, DisplayInventory inventory)
         {
             _store = store;
+            _isbn13 = inventory.Isbn13;
+            Title = inventory.Title;
+            Quantity = inventory.Quantity;
+            RaisedPropertyChanged(nameof(Quantity));
 
-            using var db = new BookStoreContext();
-
-            var existingBooksInStore = db.StoreBooks
-                .Where(sb => sb.StoreId == store.StoreId)
-                .Select(sb => sb.Isbn13)
-                .ToHashSet();
-
-            Books = new ObservableCollection<Book>(
-                db.Books
-                  .Where(b => !existingBooksInStore.Contains(b.Isbn13))
-                  .OrderBy(b => b.Title)
-                  .ToList()
-            );
-
-            if (inventory != null)
-            {
-                _originalStoreBook = db.StoreBooks
-                    .Include(sb => sb.Isbn13Navigation)
-                    .First(sb =>
-                        sb.StoreId == store.StoreId &&
-                        sb.Isbn13 == inventory.Isbn13
-                    );
-
-                SelectedBook = Books.First(b => b.Isbn13 == inventory.Isbn13);
-                Quantity = inventory.Quantity;
-            }
-            else
-            {
-                Quantity = 1;
-            }
-
-            SaveCommand = new DelegateCommand(
-                _ => Save(),
-                _ => CanSave()
-            );
-
+            SaveCommand = new DelegateCommand(_ => Save(), _ => Quantity >= 0);
             CancelCommand = new DelegateCommand(_ => CloseAction?.Invoke(false));
-        }
-
-        private bool CanSave()
-        {
-            return SelectedBook != null && Quantity >= 0;
         }
 
         private void Save()
         {
-            if (SelectedBook == null)
-            {
-                MessageBox.Show("En bok måste väljas.");
-                return;
-            }
-
             using var db = new BookStoreContext();
 
-            StoreBook storeBook;
+            var storeBook = db.StoreBooks.FirstOrDefault(sb =>
+                sb.StoreId == _store.StoreId &&
+                sb.Isbn13 == _isbn13
+            );
 
-            if (IsEditMode)
+            if (storeBook == null)
             {
-                storeBook = db.StoreBooks.First(sb =>
-                    sb.StoreId == _store.StoreId &&
-                    sb.Isbn13 == _originalStoreBook!.Isbn13
-                );
-            }
-            else
-            {
-                bool exists = db.StoreBooks.Any(sb =>
-                    sb.StoreId == _store.StoreId &&
-                    sb.Isbn13 == SelectedBook.Isbn13
-                );
-
-                if (exists)
-                {
-                    MessageBox.Show(
-                        "Denna bok finns redan i butikens lager.",
-                        "Fel",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning
-                    );
-                    return;
-                }
-
                 storeBook = new StoreBook
                 {
                     StoreId = _store.StoreId,
-                    Isbn13 = SelectedBook.Isbn13
+                    Isbn13 = _isbn13
                 };
-
                 db.StoreBooks.Add(storeBook);
             }
 
@@ -153,10 +77,10 @@ namespace BookStore.Presentation.ViewModels.Inventory
                 db.SaveChanges();
                 CloseAction?.Invoke(true);
             }
-            catch (Exception)
+            catch
             {
                 MessageBox.Show(
-                    "Kunde inte spara lagersaldot.",
+                    "Något gick fel. Kunde inte spara.",
                     "Fel",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
